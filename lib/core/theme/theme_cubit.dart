@@ -9,7 +9,7 @@ enum AppThemeMode { light, dark }
 ///
 /// Pattern to copy for YOUR feature:
 ///   1. Define your states (here: AppThemeMode)
-///   2. Extend Cubit<YourStateType>
+///   2. Extend Cubit with your state type
 ///   3. Write methods that do work, then `emit(newState)`
 ///   4. Never put Firebase/SharedPreferences calls in the UI — only here
 ///      or in a Repository this Cubit talks to.
@@ -29,8 +29,9 @@ class ThemeCubit extends Cubit<AppThemeMode> {
 
   /// Called from the UI (e.g. a Switch or button).
   Future<void> toggleTheme() async {
-    final newMode =
-        state == AppThemeMode.light ? AppThemeMode.dark : AppThemeMode.light;
+    final newMode = state == AppThemeMode.light
+        ? AppThemeMode.dark
+        : AppThemeMode.light;
     emit(newMode); // 1. update the UI immediately
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
