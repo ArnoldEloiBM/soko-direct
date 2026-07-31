@@ -7,6 +7,8 @@ import 'app.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/auth/data/repositories/firebase_auth_repository.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
+import 'features/offers/presentation/offer_cubit.dart';
+import 'features/offers/data/offer_repository_impl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +23,9 @@ void main() async {
         BlocProvider(create: (_) => ThemeCubit()),
         BlocProvider(
           create: (_) => AuthCubit(authRepository: FirebaseAuthRepository()),
+        ),
+        BlocProvider(
+          create: (_) => OfferCubit(repository: OfferRepositoryImpl()),
         ),
 
         // Teammates: add yours here, e.g.
