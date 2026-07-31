@@ -24,9 +24,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: ListingCard(listing: listing),
-        ),
+        home: Scaffold(body: ListingCard(listing: listing)),
       ),
     );
 
@@ -56,9 +54,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: ListingCard(listing: listing),
-        ),
+        home: Scaffold(body: ListingCard(listing: listing)),
       ),
     );
 

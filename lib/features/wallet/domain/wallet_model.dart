@@ -25,10 +25,7 @@ class WalletModel {
 
   /// Used when writing to Firestore (or logging in the fake repository).
   Map<String, dynamic> toMap() {
-    return {
-      'balance': balance,
-      'provider': provider,
-    };
+    return {'balance': balance, 'provider': provider};
   }
 
   WalletModel copyWith({double? balance, String? provider}) {

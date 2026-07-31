@@ -24,7 +24,9 @@ class FakeWalletRepository implements WalletRepository {
 
   @override
   Future<WalletModel> getWallet(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 500)); // fake network delay
+    await Future.delayed(
+      const Duration(milliseconds: 500),
+    ); // fake network delay
     final wallet = _fakeDb[userId];
     if (wallet == null) {
       throw Exception('Wallet not found for user $userId');

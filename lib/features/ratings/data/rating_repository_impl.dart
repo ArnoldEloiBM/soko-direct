@@ -8,7 +8,7 @@ class RatingRepositoryImpl implements RatingRepository {
   final FirebaseFirestore _firestore;
 
   RatingRepositoryImpl({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _ratingsRef =>
       _firestore.collection('ratings');
@@ -31,17 +31,19 @@ class RatingRepositoryImpl implements RatingRepository {
         .where('rateeId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              final data = doc.data();
-              return Rating(
-                id: doc.id,
-                transactionId: data['transactionId'] as String,
-                raterId: data['raterId'] as String,
-                rateeId: data['rateeId'] as String,
-                stars: data['stars'] as int,
-                comment: data['comment'] as String,
-                createdAt: (data['createdAt'] as Timestamp).toDate(),
-              );
-            }).toList());
+        .map(
+          (snapshot) => snapshot.docs.map((doc) {
+            final data = doc.data();
+            return Rating(
+              id: doc.id,
+              transactionId: data['transactionId'] as String,
+              raterId: data['raterId'] as String,
+              rateeId: data['rateeId'] as String,
+              stars: data['stars'] as int,
+              comment: data['comment'] as String,
+              createdAt: (data['createdAt'] as Timestamp).toDate(),
+            );
+          }).toList(),
+        );
   }
 }

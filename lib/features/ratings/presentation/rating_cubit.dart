@@ -9,18 +9,20 @@ class RatingCubit extends Cubit<RatingState> {
   StreamSubscription<List<Rating>>? _subscription;
 
   RatingCubit({required RatingRepository repository})
-      : _repository = repository,
-        super(const RatingState());
+    : _repository = repository,
+      super(const RatingState());
 
   /// Starts listening to ratings left for [userId]. Call this once
   /// when the profile/rating screen opens.
   void watchRatingsForUser(String userId) {
     _subscription?.cancel();
-    _subscription = _repository.watchRatingsForUser(userId).listen(
-      (ratings) => emit(state.copyWith(ratings: ratings)),
-      onError: (_) =>
-          emit(state.copyWith(errorMessage: 'Could not load ratings.')),
-    );
+    _subscription = _repository
+        .watchRatingsForUser(userId)
+        .listen(
+          (ratings) => emit(state.copyWith(ratings: ratings)),
+          onError: (_) =>
+              emit(state.copyWith(errorMessage: 'Could not load ratings.')),
+        );
   }
 
   Future<void> submitRating({
@@ -44,10 +46,12 @@ class RatingCubit extends Cubit<RatingState> {
       await _repository.submitRating(rating);
       emit(state.copyWith(submitStatus: RatingSubmitStatus.success));
     } catch (_) {
-      emit(state.copyWith(
-        submitStatus: RatingSubmitStatus.failure,
-        errorMessage: 'Could not submit rating. Try again.',
-      ));
+      emit(
+        state.copyWith(
+          submitStatus: RatingSubmitStatus.failure,
+          errorMessage: 'Could not submit rating. Try again.',
+        ),
+      );
     }
   }
 

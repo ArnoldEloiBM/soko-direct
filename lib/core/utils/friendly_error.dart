@@ -1,4 +1,3 @@
-
 /// Maps low-level errors into user-facing messages.
 String friendlyErrorMessage(Object error) {
   final message = error.toString().toLowerCase();

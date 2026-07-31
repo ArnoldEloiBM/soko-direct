@@ -117,10 +117,7 @@ class _CropThumbnail extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: photoUrl.isNotEmpty
-          ? ListingPhotoImage(
-              photoUrl: photoUrl,
-              fallback: _emojiFallback(),
-            )
+          ? ListingPhotoImage(photoUrl: photoUrl, fallback: _emojiFallback())
           : _emojiFallback(),
     );
   }

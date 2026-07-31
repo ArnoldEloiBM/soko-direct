@@ -37,7 +37,10 @@ class ListingsDomain {
     if (listingId.isEmpty) {
       throw const ListingsDomainException('Listing id is required.');
     }
-    _validateInputForUpdate(input, requirePhoto: input.existingPhotoUrl == null);
+    _validateInputForUpdate(
+      input,
+      requirePhoto: input.existingPhotoUrl == null,
+    );
     try {
       return await _repository.updateListing(
         listingId: listingId,
@@ -73,7 +76,10 @@ class ListingsDomain {
     }
   }
 
-  void _validateInputForCreate(ListingInput input, {required bool requirePhoto}) {
+  void _validateInputForCreate(
+    ListingInput input, {
+    required bool requirePhoto,
+  }) {
     _validateSharedFields(input, requirePhoto: requirePhoto);
     if (input.quantityKg <= 0) {
       throw const ListingsDomainException(
@@ -83,7 +89,10 @@ class ListingsDomain {
     _validateAvailableDate(input.availableFrom);
   }
 
-  void _validateInputForUpdate(ListingInput input, {required bool requirePhoto}) {
+  void _validateInputForUpdate(
+    ListingInput input, {
+    required bool requirePhoto,
+  }) {
     _validateSharedFields(input, requirePhoto: requirePhoto);
     if (input.quantityKg < 0) {
       throw const ListingsDomainException('Quantity cannot be negative.');
@@ -105,9 +114,7 @@ class ListingsDomain {
       throw const ListingsDomainException('Please select a valid location.');
     }
     if (requirePhoto && !ListingOptions.isPresetPhoto(input.photoPath ?? '')) {
-      throw const ListingsDomainException(
-        'Please select a produce photo.',
-      );
+      throw const ListingsDomainException('Please select a produce photo.');
     }
   }
 

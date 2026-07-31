@@ -8,7 +8,7 @@ import 'package:soko_direct/features/listings/domain/listings_repository.dart';
 
 class FakeListingsRepository implements ListingsRepository {
   FakeListingsRepository({List<Listing>? seed})
-      : _listings = List.of(seed ?? []);
+    : _listings = List.of(seed ?? []);
 
   final List<Listing> _listings;
   final StreamController<List<Listing>> _controller =
@@ -47,7 +47,8 @@ class FakeListingsRepository implements ListingsRepository {
       quantityKg: input.quantityKg,
       availableFrom: input.availableFrom,
       location: input.location,
-      photoUrl: input.photoPath ??
+      photoUrl:
+          input.photoPath ??
           input.existingPhotoUrl ??
           ListingOptions.photoAssetFor(input.cropType),
       status: ListingStatus.active,
@@ -87,9 +88,7 @@ class FakeListingsRepository implements ListingsRepository {
       quantityKg: input.quantityKg,
       availableFrom: input.availableFrom,
       location: input.location,
-      photoUrl: input.photoPath ??
-          input.existingPhotoUrl ??
-          existing.photoUrl,
+      photoUrl: input.photoPath ?? input.existingPhotoUrl ?? existing.photoUrl,
       status: resolvedStatus,
       updatedAt: now,
     );

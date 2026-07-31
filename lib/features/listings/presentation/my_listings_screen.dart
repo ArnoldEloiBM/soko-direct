@@ -112,10 +112,8 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
     final currentUserId = context.read<AuthCubit>().state.user?.id ?? '';
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => ListingDetailScreen(
-          listing: listing,
-          currentUserId: currentUserId,
-        ),
+        builder: (_) =>
+            ListingDetailScreen(listing: listing, currentUserId: currentUserId),
       ),
     );
   }

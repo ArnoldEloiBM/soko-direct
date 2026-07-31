@@ -46,9 +46,9 @@ class _RatingScreenState extends State<RatingScreen> {
       body: BlocConsumer<RatingCubit, RatingState>(
         listener: (context, state) {
           if (state.submitStatus == RatingSubmitStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Rating submitted')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Rating submitted')));
             setState(() {
               _selectedStars = 0;
               _commentController.clear();
@@ -67,7 +67,10 @@ class _RatingScreenState extends State<RatingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Leave a rating', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  'Leave a rating',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -97,16 +100,17 @@ class _RatingScreenState extends State<RatingScreen> {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  onPressed: _selectedStars == 0 ||
+                  onPressed:
+                      _selectedStars == 0 ||
                           state.submitStatus == RatingSubmitStatus.submitting
                       ? null
                       : () => context.read<RatingCubit>().submitRating(
-                            transactionId: widget.transactionId,
-                            raterId: widget.raterId,
-                            rateeId: widget.rateeId,
-                            stars: _selectedStars,
-                            comment: _commentController.text,
-                          ),
+                          transactionId: widget.transactionId,
+                          raterId: widget.raterId,
+                          rateeId: widget.rateeId,
+                          stars: _selectedStars,
+                          comment: _commentController.text,
+                        ),
                   child: state.submitStatus == RatingSubmitStatus.submitting
                       ? const CircularProgressIndicator()
                       : const Text('Submit Rating'),
@@ -130,21 +134,26 @@ class _RatingScreenState extends State<RatingScreen> {
                 if (state.ratings.isEmpty)
                   const Text('No ratings yet.')
                 else
-                  ...state.ratings.map((r) => Card(
-                        child: ListTile(
-                          leading: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: List.generate(
-                              r.stars,
-                              (_) => const Icon(Icons.star,
-                                  color: Colors.amber, size: 16),
+                  ...state.ratings.map(
+                    (r) => Card(
+                      child: ListTile(
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(
+                            r.stars,
+                            (_) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 16,
                             ),
                           ),
-                          title: Text(
-                            r.comment.isEmpty ? '(no comment)' : r.comment,
-                          ),
                         ),
-                      )),
+                        title: Text(
+                          r.comment.isEmpty ? '(no comment)' : r.comment,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           );

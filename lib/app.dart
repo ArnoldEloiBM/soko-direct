@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
-import 'features/auth/presentation/screens/auth_gate.dart';
+import 'features/onboarding/presentation/splash_screen.dart';
 
 class SokoDirectApp extends StatelessWidget {
   const SokoDirectApp({super.key});
@@ -21,10 +21,7 @@ class SokoDirectApp extends StatelessWidget {
           themeMode: themeMode == AppThemeMode.dark
               ? ThemeMode.dark
               : ThemeMode.light,
-          // TODO(onboarding): once Armstrong's splash + role selection
-          // screens land, push AuthGate from there instead of using it
-          // directly as `home`.
-          home: const AuthGate(),
+          home: const SplashScreen(),
         );
       },
     );

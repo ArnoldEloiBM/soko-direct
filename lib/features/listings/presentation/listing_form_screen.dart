@@ -37,7 +37,8 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
     _cropType = listing?.cropType ?? ListingOptions.cropTypes.first;
     _location = listing?.location ?? ListingOptions.locations.first;
     _availableFrom = listing?.availableFrom;
-    _photoPath = listing != null && ListingOptions.isAssetPhoto(listing.photoUrl)
+    _photoPath =
+        listing != null && ListingOptions.isAssetPhoto(listing.photoUrl)
         ? listing.photoUrl
         : ListingOptions.photoAssetFor(_cropType);
     if (listing != null) {

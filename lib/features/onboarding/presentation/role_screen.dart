@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/l10n/app_strings.dart';
 import '../../../core/language/language_cubit.dart';
 import '../../../core/role/role_cubit.dart';
-import '../../listings/presentation/screens/main_shell.dart';
+import '../../auth/presentation/screens/auth_gate.dart';
 
 /// Lets the user pick Farmer or Buyer. The choice is:
 ///   1) saved via Audric's RoleCubit (SharedPreferences — 3rd persisted
@@ -17,10 +17,11 @@ class RoleScreen extends StatelessWidget {
   Future<void> _choose(BuildContext context, UserRole role) async {
     await context.read<RoleCubit>().setRole(role);
     if (!context.mounted) return;
-    // TODO(Samuel): route to registration/login instead once auth is ready.
+    // AuthGate shows the (role-aware) register/login flow for a
+    // first-time user, or MainShell directly if somehow already signed in.
     Navigator.of(
       context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const MainShell()));
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const AuthGate()));
   }
 
   @override

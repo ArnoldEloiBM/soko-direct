@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../auth/presentation/screens/profile_tab.dart';
 import '../../wallet/presentation/wallet_screen.dart';
 import 'my_listings_screen.dart';
 
@@ -91,6 +92,7 @@ class _MainShellState extends State<MainShell> {
     return switch (index) {
       1 => const MyListingsScreen(),
       3 => const WalletScreen(),
+      4 => const ProfileTab(),
       _ => Center(
         child: Text(
           '${_titleForIndex(index)} coming soon',

@@ -22,6 +22,13 @@ class Rating extends Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [id, transactionId, raterId, rateeId, stars, comment, createdAt];
+  List<Object?> get props => [
+    id,
+    transactionId,
+    raterId,
+    rateeId,
+    stars,
+    comment,
+    createdAt,
+  ];
 }
