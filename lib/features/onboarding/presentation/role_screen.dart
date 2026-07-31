@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/l10n/app_strings.dart';
 import '../../../core/language/language_cubit.dart';
 import '../../../core/role/role_cubit.dart';
-import '../../listings/presentation/screens/main_shell.dart';
+import '../../listings/presentation/main_shell.dart';
 
 /// Lets the user pick Farmer or Buyer. The choice is:
 ///   1) saved via Audric's RoleCubit (SharedPreferences — 3rd persisted
