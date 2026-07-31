@@ -3,18 +3,27 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '../../domain/entities/listing.dart';
-import '../../domain/entities/listing_input.dart';
-import '../../domain/entities/listing_status.dart';
-import '../models/listing_model.dart';
+import '../domain/listing.dart';
+import '../domain/listing_input.dart';
+import '../domain/listing_status.dart';
+import '../domain/listings_repository.dart';
+import 'listing_model.dart';
 
-/// Talks to Firestore only — no UI or validation logic here.
-class ListingsFirestoreDataSource {
-  ListingsFirestoreDataSource({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+class FirestoreListingsRepository implements ListingsRepository {
+  FirestoreListingsRepository({
+    FirebaseFirestore? firestore,
+    FirebaseStorage? storage,
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _storage = storage ?? FirebaseStorage.instance;
 
   final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
 
+  String _newListingId() {
+    return _firestore.collection(ListingModel.collectionName).doc().id;
+  }
+
+  @override
   Stream<List<Listing>> watchUserListings(String sellerId) {
     return _firestore
         .collection(ListingModel.collectionName)
@@ -29,12 +38,18 @@ class ListingsFirestoreDataSource {
         );
   }
 
+  @override
   Future<Listing> createListing({
-    required String listingId,
     required String sellerId,
     required ListingInput input,
-    required String photoUrl,
   }) async {
+    final listingId = _newListingId();
+    final photoUrl = await _uploadPhoto(
+      sellerId: sellerId,
+      listingId: listingId,
+      localPath: input.photoPath!,
+    );
+
     final now = DateTime.now();
     final docRef = _firestore
         .collection(ListingModel.collectionName)
@@ -58,12 +73,23 @@ class ListingsFirestoreDataSource {
     return model.toEntity();
   }
 
+  @override
   Future<Listing> updateListing({
     required String listingId,
     required String sellerId,
     required ListingInput input,
-    required String photoUrl,
   }) async {
+    var photoUrl = input.existingPhotoUrl ?? '';
+
+    if (input.photoPath != null && input.photoPath!.isNotEmpty) {
+      await _deletePhoto(sellerId: sellerId, listingId: listingId);
+      photoUrl = await _uploadPhoto(
+        sellerId: sellerId,
+        listingId: listingId,
+        localPath: input.photoPath!,
+      );
+    }
+
     final docRef = _firestore
         .collection(ListingModel.collectionName)
         .doc(listingId);
@@ -77,8 +103,14 @@ class ListingsFirestoreDataSource {
     if (existing.sellerId != sellerId) {
       throw StateError('Permission denied');
     }
+    if (existing.status == ListingStatus.sold) {
+      throw StateError('Listing already sold');
+    }
 
     final now = DateTime.now();
+    final resolvedStatus = input.quantityKg <= 0
+        ? ListingStatus.sold
+        : existing.status;
     final updated = ListingModel(
       id: listingId,
       sellerId: sellerId,
@@ -88,7 +120,7 @@ class ListingsFirestoreDataSource {
       availableFrom: input.availableFrom,
       location: input.location,
       photoUrl: photoUrl,
-      status: existing.status,
+      status: resolvedStatus,
       offerCount: existing.offerCount,
       createdAt: existing.createdAt,
       updatedAt: now,
@@ -98,6 +130,7 @@ class ListingsFirestoreDataSource {
     return updated.toEntity();
   }
 
+  @override
   Future<void> deleteListing({
     required String listingId,
     required String sellerId,
@@ -116,18 +149,11 @@ class ListingsFirestoreDataSource {
       throw StateError('Permission denied');
     }
 
+    await _deletePhoto(sellerId: sellerId, listingId: listingId);
     await docRef.delete();
   }
-}
 
-/// Talks to Firebase Storage only.
-class ListingsStorageDataSource {
-  ListingsStorageDataSource({FirebaseStorage? storage})
-    : _storage = storage ?? FirebaseStorage.instance;
-
-  final FirebaseStorage _storage;
-
-  Future<String> uploadPhoto({
+  Future<String> _uploadPhoto({
     required String sellerId,
     required String listingId,
     required String localPath,
@@ -138,7 +164,7 @@ class ListingsStorageDataSource {
     return ref.getDownloadURL();
   }
 
-  Future<void> deletePhoto({
+  Future<void> _deletePhoto({
     required String sellerId,
     required String listingId,
   }) async {

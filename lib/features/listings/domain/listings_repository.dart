@@ -1,5 +1,5 @@
-import '../entities/listing.dart';
-import '../entities/listing_input.dart';
+import 'listing.dart';
+import 'listing_input.dart';
 
 /// Data-layer contract. Screens and Cubits never implement this directly.
 abstract class ListingsRepository {

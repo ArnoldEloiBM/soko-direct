@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../domain/entities/listing.dart';
+import '../domain/listing.dart';
 
 enum ListingsAction { none, creating, updating, deleting }
 

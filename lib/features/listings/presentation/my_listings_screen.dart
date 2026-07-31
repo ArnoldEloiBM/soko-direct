@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../domain/entities/listing.dart';
-import '../cubit/listings_cubit.dart';
-import '../cubit/listings_state.dart';
-import '../screens/listing_form_screen.dart';
-import '../widgets/listing_card.dart';
+import '../../../core/constants/app_colors.dart';
+import '../domain/listing.dart';
+import 'listing_card.dart';
+import 'listing_form_screen.dart';
+import 'listings_cubit.dart';
+import 'listings_state.dart';
 
 class MyListingsScreen extends StatefulWidget {
   const MyListingsScreen({super.key});

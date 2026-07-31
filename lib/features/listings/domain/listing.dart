@@ -32,6 +32,9 @@ class Listing extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
+  /// True when the listing is no longer available (explicit status or zero stock).
+  bool get isSoldOut => status == ListingStatus.sold || quantityKg <= 0;
+
   Listing copyWith({
     String? id,
     String? sellerId,

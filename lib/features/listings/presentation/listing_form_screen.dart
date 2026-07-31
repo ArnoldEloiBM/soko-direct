@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../domain/constants/listing_options.dart';
-import '../../domain/entities/listing.dart';
-import '../../domain/entities/listing_input.dart';
-import '../cubit/listings_cubit.dart';
-import '../cubit/listings_state.dart';
+import '../../../core/constants/app_colors.dart';
+import '../domain/listing.dart';
+import '../domain/listing_input.dart';
+import '../domain/listing_options.dart';
+import 'listings_cubit.dart';
+import 'listings_state.dart';
 
 class ListingFormScreen extends StatefulWidget {
   const ListingFormScreen({super.key, this.listing});
@@ -54,6 +54,8 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isSold = widget.listing?.isSoldOut ?? false;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -68,6 +70,36 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (isSold) ...[
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.badgeSoldBg,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle_outline,
+                                color: AppColors.badgeSoldText,
+                                size: 18,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'This listing is sold and cannot be edited.',
+                                  style: TextStyle(
+                                    color: AppColors.badgeSoldText,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                       _FieldLabel('Crop Type'),
                       _CropDropdown(
                         value: _cropType,
@@ -98,11 +130,19 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                       TextFormField(
                         controller: _quantityController,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration('e.g. 50'),
+                        enabled: !isSold,
+                        decoration: _inputDecoration(
+                          widget.isEditing
+                              ? 'e.g. 50 (set 0 when stock is empty)'
+                              : 'e.g. 50',
+                        ),
                         validator: (value) {
                           final parsed = double.tryParse(value ?? '');
-                          if (parsed == null || parsed <= 0) {
+                          if (parsed == null || parsed < 0) {
                             return 'Enter a valid quantity';
+                          }
+                          if (!widget.isEditing && parsed <= 0) {
+                            return 'Quantity must be greater than zero';
                           }
                           return null;
                         },
@@ -160,7 +200,7 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                         builder: (context, state) {
                           final isSubmitting = state.isBusy;
                           return FilledButton(
-                            onPressed: isSubmitting ? null : _submit,
+                            onPressed: isSubmitting || isSold ? null : _submit,
                             style: FilledButton.styleFrom(
                               backgroundColor: AppColors.primaryGreen,
                               padding: const EdgeInsets.symmetric(vertical: 16),

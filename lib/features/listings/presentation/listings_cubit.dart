@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/utils/friendly_error.dart';
-import '../../../auth/domain/auth_repository.dart';
-import '../../domain/entities/listing.dart';
-import '../../domain/entities/listing_input.dart';
-import '../../domain/listings_domain.dart';
+import '../../../core/utils/friendly_error.dart';
+import '../../auth/domain/auth_repository.dart';
+import '../domain/listing.dart';
+import '../domain/listing_input.dart';
+import '../domain/listings_domain.dart';
 import 'listings_state.dart';
 
 class ListingsCubit extends Cubit<ListingsState> {
@@ -84,7 +84,7 @@ class ListingsCubit extends Cubit<ListingsState> {
     emit(state.copyWith(action: ListingsAction.updating, clearMessages: true));
     try {
       final sellerId = await _authRepository.ensureSignedIn();
-      await _domain.updateListing(
+      final updated = await _domain.updateListing(
         listingId: listingId,
         sellerId: sellerId,
         input: input,
@@ -92,7 +92,9 @@ class ListingsCubit extends Cubit<ListingsState> {
       emit(
         state.copyWith(
           action: ListingsAction.none,
-          successMessage: 'Listing updated successfully.',
+          successMessage: updated.isSoldOut
+              ? 'Listing marked as sold — your stock is empty.'
+              : 'Listing updated successfully.',
         ),
       );
       return true;

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../domain/entities/listing.dart';
-import '../../domain/entities/listing_status.dart';
+import '../domain/listing.dart';
+import '../domain/listing_status.dart';
 
 /// Firestore field names match the team ERD exactly.
 class ListingModel {
@@ -49,7 +49,7 @@ class ListingModel {
       location: data['location'] as String,
       photoUrl: data['photoUrl'] as String,
       status: ListingStatus.fromFirestore(data['status'] as String),
-      offerCount: data['offerCount'] as int? ?? 0,
+      offerCount: (data['offerCount'] as num?)?.toInt() ?? 0,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: data['updatedAt'] != null
           ? (data['updatedAt'] as Timestamp).toDate()

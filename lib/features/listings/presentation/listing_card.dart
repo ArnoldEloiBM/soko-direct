@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/utils/time_ago.dart';
-import '../../domain/constants/listing_options.dart';
-import '../../domain/entities/listing.dart';
-import '../../domain/entities/listing_status.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/time_ago.dart';
+import '../domain/listing.dart';
+import '../domain/listing_options.dart';
 
 class ListingCard extends StatelessWidget {
   const ListingCard({
@@ -62,9 +61,7 @@ class ListingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${listing.quantityKg.toStringAsFixed(0)} kg · '
-                      '${listing.pricePerKg.toStringAsFixed(0)} RWF/kg · '
-                      '${listing.location}',
+                      _detailsLine(listing),
                       style: const TextStyle(
                         color: AppColors.subtitleGrey,
                         fontSize: 13,
@@ -72,7 +69,7 @@ class ListingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      listing.status == ListingStatus.sold
+                      listing.isSoldOut
                           ? formatSoldTimeAgo(
                               listing.updatedAt ?? listing.createdAt,
                             )
@@ -90,6 +87,15 @@ class ListingCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _detailsLine(Listing listing) {
+    final pricePart =
+        '${listing.pricePerKg.toStringAsFixed(0)} RWF/kg · ${listing.location}';
+    if (listing.isSoldOut && listing.quantityKg <= 0) {
+      return pricePart;
+    }
+    return '${listing.quantityKg.toStringAsFixed(0)} kg · $pricePart';
   }
 }
 
@@ -136,7 +142,7 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (listing.status == ListingStatus.sold) {
+    if (listing.isSoldOut) {
       return _badge('Sold', AppColors.badgeSoldBg, AppColors.badgeSoldText);
     }
     if (listing.offerCount > 0) {

@@ -1,7 +1,7 @@
-import 'constants/listing_options.dart';
-import 'entities/listing.dart';
-import 'entities/listing_input.dart';
-import 'repositories/listings_repository.dart';
+import 'listing.dart';
+import 'listing_input.dart';
+import 'listing_options.dart';
+import 'listings_repository.dart';
 
 /// Domain rules: validation and orchestration. Cubits call this, not Firebase.
 class ListingsDomain {
@@ -24,7 +24,7 @@ class ListingsDomain {
     required ListingInput input,
   }) async {
     _validateSellerId(sellerId);
-    _validateInput(input, requirePhoto: true);
+    _validateInputForCreate(input, requirePhoto: true);
     return _repository.createListing(sellerId: sellerId, input: input);
   }
 
@@ -37,12 +37,21 @@ class ListingsDomain {
     if (listingId.isEmpty) {
       throw const ListingsDomainException('Listing id is required.');
     }
-    _validateInput(input, requirePhoto: input.existingPhotoUrl == null);
-    return _repository.updateListing(
-      listingId: listingId,
-      sellerId: sellerId,
-      input: input,
-    );
+    _validateInputForUpdate(input, requirePhoto: input.existingPhotoUrl == null);
+    try {
+      return await _repository.updateListing(
+        listingId: listingId,
+        sellerId: sellerId,
+        input: input,
+      );
+    } on StateError catch (error) {
+      if (error.message == 'Listing already sold') {
+        throw const ListingsDomainException(
+          'This listing is already sold and cannot be edited.',
+        );
+      }
+      rethrow;
+    }
   }
 
   Future<void> deleteListing({
@@ -64,31 +73,50 @@ class ListingsDomain {
     }
   }
 
-  void _validateInput(ListingInput input, {required bool requirePhoto}) {
+  void _validateInputForCreate(ListingInput input, {required bool requirePhoto}) {
+    _validateSharedFields(input, requirePhoto: requirePhoto);
+    if (input.quantityKg <= 0) {
+      throw const ListingsDomainException(
+        'Quantity must be greater than zero.',
+      );
+    }
+    _validateAvailableDate(input.availableFrom);
+  }
+
+  void _validateInputForUpdate(ListingInput input, {required bool requirePhoto}) {
+    _validateSharedFields(input, requirePhoto: requirePhoto);
+    if (input.quantityKg < 0) {
+      throw const ListingsDomainException('Quantity cannot be negative.');
+    }
+    // Setting quantity to 0 marks the listing sold (stock empty).
+    if (input.quantityKg > 0) {
+      _validateAvailableDate(input.availableFrom);
+    }
+  }
+
+  void _validateSharedFields(ListingInput input, {required bool requirePhoto}) {
     if (!ListingOptions.cropTypes.contains(input.cropType)) {
       throw const ListingsDomainException('Please select a valid crop type.');
     }
     if (input.pricePerKg <= 0) {
       throw const ListingsDomainException('Price must be greater than zero.');
     }
-    if (input.quantityKg <= 0) {
-      throw const ListingsDomainException(
-        'Quantity must be greater than zero.',
-      );
-    }
     if (!ListingOptions.locations.contains(input.location)) {
       throw const ListingsDomainException('Please select a valid location.');
-    }
-    final today = DateTime.now();
-    final startOfToday = DateTime(today.year, today.month, today.day);
-    if (input.availableFrom.isBefore(startOfToday)) {
-      throw const ListingsDomainException(
-        'Available date cannot be in the past.',
-      );
     }
     if (requirePhoto && (input.photoPath == null || input.photoPath!.isEmpty)) {
       throw const ListingsDomainException(
         'Please add a photo of your produce.',
+      );
+    }
+  }
+
+  void _validateAvailableDate(DateTime availableFrom) {
+    final today = DateTime.now();
+    final startOfToday = DateTime(today.year, today.month, today.day);
+    if (availableFrom.isBefore(startOfToday)) {
+      throw const ListingsDomainException(
+        'Available date cannot be in the past.',
       );
     }
   }
