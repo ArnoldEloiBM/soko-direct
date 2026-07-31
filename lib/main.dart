@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; 
-
 import 'app.dart';
 import 'core/theme/theme_cubit.dart';
+import 'features/dashboard/data/firestore_market_repository.dart';
+import 'features/dashboard/presentation/farmer_dashboard_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
