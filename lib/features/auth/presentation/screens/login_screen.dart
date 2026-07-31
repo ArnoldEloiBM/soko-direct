@@ -19,8 +19,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  UserRole _role = UserRole.farmer;
+  late UserRole _role;
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final savedRole = context.read<RoleCubit>().state;
+    _role = savedRole == UserRole.none ? UserRole.farmer : savedRole;
+  }
 
   @override
   void dispose() {
