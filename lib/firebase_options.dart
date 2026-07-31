@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '427109559549',
     projectId: 'sokodirect-54ac8',
     storageBucket: 'sokodirect-54ac8.firebasestorage.app',
-    iosClientId: '427109559549-mdqae2tn699iplp06t9vtnptvou3s4pa.apps.googleusercontent.com',
+    iosClientId:
+        '427109559549-mdqae2tn699iplp06t9vtnptvou3s4pa.apps.googleusercontent.com',
     iosBundleId: 'com.example.sokoDirect',
   );
 
@@ -73,7 +74,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '427109559549',
     projectId: 'sokodirect-54ac8',
     storageBucket: 'sokodirect-54ac8.firebasestorage.app',
-    iosClientId: '427109559549-mdqae2tn699iplp06t9vtnptvou3s4pa.apps.googleusercontent.com',
+    iosClientId:
+        '427109559549-mdqae2tn699iplp06t9vtnptvou3s4pa.apps.googleusercontent.com',
     iosBundleId: 'com.example.sokoDirect',
   );
 
