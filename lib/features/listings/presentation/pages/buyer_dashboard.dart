@@ -1,55 +1,50 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../widgets/search_filter_bar.dart';
-import '../widgets/listing_card.dart';
-import '../../../offers/presentation/pages/make_offer_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-//using fake listings below for now, swap this out once firebase is ready
-class BuyerDashboardPage extends StatefulWidget {
+import '../../../../core/constants/app_colors.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../data/firestore_listings_repository.dart';
+import '../../domain/listing.dart';
+import '../../domain/listing_status.dart';
+import '../browse_listings_cubit.dart';
+import '../browse_listings_state.dart';
+import '../listing_detail_screen.dart';
+import '../widgets/listing_card.dart';
+import '../widgets/search_filter_bar.dart';
+
+/// Self-contained: creates its own [BrowseListingsCubit] over a fresh
+/// [FirestoreListingsRepository], same pattern as TransactionHistoryScreen.
+class BuyerDashboardPage extends StatelessWidget {
   const BuyerDashboardPage({super.key});
 
   @override
-  State<BuyerDashboardPage> createState() => _BuyerDashboardPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          BrowseListingsCubit(repository: FirestoreListingsRepository()),
+      child: const _BuyerDashboardView(),
+    );
+  }
 }
 
-class _BuyerDashboardPageState extends State<BuyerDashboardPage> {
+class _BuyerDashboardView extends StatefulWidget {
+  const _BuyerDashboardView();
+
+  @override
+  State<_BuyerDashboardView> createState() => _BuyerDashboardViewState();
+}
+
+class _BuyerDashboardViewState extends State<_BuyerDashboardView> {
   String searchText = '';
   String? cropFilter;
 
-  //fake listings just so we can see the screen working
-  final fakeListings = [
-    {
-      'crop': 'Tomatoes',
-      'farmer': 'Uwimana Chantal',
-      'district': 'Musanze',
-      'price': 480.0,
-      'rating': 4.8,
-      'verified': true,
-    },
-    {
-      'crop': 'Onions',
-      'farmer': 'Nkurunziza Jean',
-      'district': 'Huye',
-      'price': 350.0,
-      'rating': 4.2,
-      'verified': false,
-    },
-    {
-      'crop': 'Green Peppers',
-      'farmer': 'Mukamana Alice',
-      'district': 'Bugesera',
-      'price': 520.0,
-      'rating': 4.9,
-      'verified': true,
-    },
-  ];
-
-  List<Map<String, dynamic>> get visibleListings {
-    return fakeListings.where((l) {
+  List<Listing> _visibleListings(List<Listing> listings) {
+    return listings.where((listing) {
+      if (listing.status == ListingStatus.sold) return false;
       final matchesSearch =
           searchText.isEmpty ||
-          l['crop'].toString().toLowerCase().contains(searchText.toLowerCase());
-      final matchesCrop = cropFilter == null || l['crop'] == cropFilter;
+          listing.cropType.toLowerCase().contains(searchText.toLowerCase());
+      final matchesCrop = cropFilter == null || listing.cropType == cropFilter;
       return matchesSearch && matchesCrop;
     }).toList();
   }
@@ -76,44 +71,62 @@ class _BuyerDashboardPageState extends State<BuyerDashboardPage> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: visibleListings.isEmpty
-                  ? const Center(child: Text('No produce matches your search.'))
-                  : GridView.builder(
-                      itemCount: visibleListings.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childAspectRatio: 0.68,
-                          ),
-                      itemBuilder: (context, i) {
-                        final l = visibleListings[i];
-                        return ListingCard(
-                          cropName: l['crop'] as String,
-                          farmerName: l['farmer'] as String,
-                          district: l['district'] as String,
-                          pricePerKg: l['price'] as double,
-                          photoUrl: '',
-                          rating: l['rating'] as double,
-                          verified: l['verified'] as bool,
-                          onTap: () {
-                            // TEMP: goes straight to Make Offer, skipping Listing
-                            // Detail for now since that screen isn't built yet.
-                            // Once it exists, tap should open that instead.
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => MakeOfferPage(
-                                  cropName: l['crop'] as String,
-                                  marketPrice: l['price'] as double,
-                                ),
+              child: BlocBuilder<BrowseListingsCubit, BrowseListingsState>(
+                builder: (context, state) {
+                  if (state.status == BrowseListingsStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.status == BrowseListingsStatus.error) {
+                    return Center(
+                      child: Text(
+                        state.errorMessage ?? 'Something went wrong.',
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }
+
+                  final visible = _visibleListings(state.listings);
+                  if (visible.isEmpty) {
+                    return const Center(
+                      child: Text('No produce matches your search.'),
+                    );
+                  }
+
+                  final currentUserId =
+                      context.read<AuthCubit>().state.user?.id ?? '';
+
+                  return GridView.builder(
+                    itemCount: visible.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 0.68,
+                        ),
+                    itemBuilder: (context, i) {
+                      final listing = visible[i];
+                      return ListingCard(
+                        cropName: listing.cropType,
+                        district: listing.location,
+                        pricePerKg: listing.pricePerKg,
+                        photoUrl: listing.photoUrl,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ListingDetailScreen(
+                                listing: listing,
+                                currentUserId: currentUserId,
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

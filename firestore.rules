@@ -44,9 +44,40 @@ service cloud.firestore {
         && resource.data.sellerId == request.auth.uid;
     }
 
-    // TODO(team): offers, ratings, and wallet collections don't have rules
-    // yet — whoever owns each of those should add a `match` block here
-    // scoped to "only the buyer/seller/owner can read or write their own
-    // data", following the pattern above.
+    // Offers: only the buyer who made the offer or the farmer who owns
+    // the listing may read it. Either side can update its status
+    // (accept/reject); only the buyer who created it can delete it.
+    match /offers/{offerId} {
+      allow read: if request.auth != null
+        && (request.auth.uid == resource.data.buyerId
+          || request.auth.uid == resource.data.farmerId);
+
+      allow create: if request.auth != null
+        && request.resource.data.buyerId == request.auth.uid;
+
+      allow update: if request.auth != null
+        && (request.auth.uid == resource.data.buyerId
+          || request.auth.uid == resource.data.farmerId);
+
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.buyerId;
+    }
+
+    // Ratings: anyone signed in can read ratings (they're shown on a
+    // seller's profile). Only the rater can create their own rating, and
+    // ratings are immutable afterward — no update/delete once submitted.
+    match /ratings/{ratingId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.raterId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Wallet: strictly the wallet's owner, both ways. (Currently only
+    // backed by a fake in-memory repository — this is here for when it
+    // moves to Firestore.)
+    match /wallets/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

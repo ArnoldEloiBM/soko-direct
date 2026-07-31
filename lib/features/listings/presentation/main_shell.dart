@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../auth/presentation/screens/profile_tab.dart';
+import '../../dashboard/presentation/farmer_dashboard_body.dart';
 import '../../wallet/presentation/wallet_screen.dart';
 import 'my_listings_screen.dart';
+import 'pages/buyer_dashboard.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -17,9 +19,10 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    // Wallet brings its own AppBar/Scaffold, so skip the green header
-    // here to avoid showing two title bars stacked on top of each other.
-    final showHeader = _currentIndex != 3;
+    // Wallet and Browse bring their own AppBar/Scaffold, so skip the
+    // green header here to avoid showing two title bars stacked on top
+    // of each other.
+    final showHeader = _currentIndex != 2 && _currentIndex != 3;
 
     return Scaffold(
       body: Column(
@@ -90,7 +93,9 @@ class _MainShellState extends State<MainShell> {
 
   Widget _bodyForIndex(int index) {
     return switch (index) {
+      0 => const FarmerDashboardBody(),
       1 => const MyListingsScreen(),
+      2 => const BuyerDashboardPage(),
       3 => const WalletScreen(),
       4 => const ProfileTab(),
       _ => Center(
