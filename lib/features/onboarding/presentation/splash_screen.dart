@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/role/role_cubit.dart';
-import '../../listings/presentation/screens/main_shell.dart';
+import '../../auth/presentation/screens/auth_gate.dart';
 import 'language_screen.dart';
 
 /// Cold-start screen (video step 1). Shows the Soko Direct branding, then:
 ///   role not chosen yet -> LanguageScreen (first launch)
-///   role saved          -> MainShell (returning user)
+///   role saved          -> AuthGate (returning user: login screen if
+///                          signed out, MainShell if still signed in)
 ///
 /// Uses Audric's RoleCubit, which restores the saved role from
 /// SharedPreferences in its constructor. The short splash delay gives that
@@ -31,9 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final role = context.read<RoleCubit>().state;
     final next = role == UserRole.none
         ? const LanguageScreen()
-        // TODO(Samuel): returning users should pass through your auth gate
-        // (login screen if signed out) before reaching MainShell.
-        : const MainShell();
+        : const AuthGate();
     Navigator.of(
       context,
     ).pushReplacement(MaterialPageRoute(builder: (_) => next));
