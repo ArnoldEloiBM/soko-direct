@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/wallet/presentation/wallet_screen.dart';
+import 'features/transactions/presentation/transaction_screen.dart';
 
 class SokoDirectApp extends StatelessWidget {
   const SokoDirectApp({super.key});
@@ -20,7 +21,7 @@ class SokoDirectApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme,
           themeMode:
               themeMode == AppThemeMode.dark ? ThemeMode.dark : ThemeMode.light,
-          home: const WalletScreen(),
+          home: const TransactionScreen(),
         );
       },
     );
