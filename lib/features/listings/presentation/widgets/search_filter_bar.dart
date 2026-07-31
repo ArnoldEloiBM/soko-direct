@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../domain/listing_options.dart';
 
 //search box + crop filter chips on top of the buyer dashboard
 //sends the search text and picked crop back up to the dashboard screen
@@ -16,14 +17,10 @@ class _SearchFilterBarState extends State<SearchFilterBar> {
   final TextEditingController searchCtrl = TextEditingController();
   String? pickedCrop;
 
-  final crops = [
-    'All',
-    'Tomatoes',
-    'Onions',
-    'Green Peppers',
-    'Potatoes',
-    'Cabbage',
-  ];
+  // Matches ListingOptions.cropTypes so filtering actually works against
+  // real listings (this used to list crops that don't exist in the
+  // listings feature at all, like Potatoes/Cabbage).
+  final crops = ['All', ...ListingOptions.cropTypes];
 
   void updateParent() {
     widget.onChanged(searchCtrl.text, pickedCrop == 'All' ? null : pickedCrop);
@@ -54,7 +51,7 @@ class _SearchFilterBarState extends State<SearchFilterBar> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: crops.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, i) {
               final crop = crops[i];
               final selected =

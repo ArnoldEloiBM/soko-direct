@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../offers/presentation/pages/make_offer_page.dart';
 import '../../ratings/data/rating_repository_impl.dart';
 import '../../ratings/presentation/rating_cubit.dart';
 import '../../ratings/presentation/rating_screen.dart';
@@ -171,11 +172,13 @@ class ListingDetailScreen extends StatelessWidget {
                       icon: const Icon(Icons.handshake),
                       label: const Text('Make an Offer'),
                       onPressed: () {
-                        // Hooks into the Make Offer / Negotiation screen
-                        // (features/offers) once wired up from here.
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Offer flow coming soon'),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => MakeOfferPage(
+                              cropName: listing.cropType,
+                              marketPrice: listing.pricePerKg,
+                            ),
                           ),
                         );
                       },

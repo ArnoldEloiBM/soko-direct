@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../listing_photo.dart';
 
 //one produce card on the buyer dashboard
-//still using fake data for now, will hook to firebase later
 class ListingCard extends StatelessWidget {
   final String cropName;
-  final String farmerName;
+  final String? farmerName;
   final String district;
   final double pricePerKg;
-  final String photoUrl; // not used yet, placeholder image for now
-  final double rating;
+  final String photoUrl;
+  final double? rating;
   final bool verified;
   final VoidCallback onTap;
 
   const ListingCard({
     super.key,
     required this.cropName,
-    required this.farmerName,
+    this.farmerName,
     required this.district,
     required this.pricePerKg,
     required this.photoUrl,
-    required this.rating,
-    required this.verified,
+    this.rating,
+    this.verified = false,
     required this.onTap,
   });
 
@@ -36,13 +36,15 @@ class ListingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // just a green box for now instead of a real photo
             AspectRatio(
               aspectRatio: 4 / 3,
-              child: Container(
-                color: AppColors.lightGreen.withOpacity(0.3),
-                child: const Center(
-                  child: Icon(Icons.image, size: 40, color: Colors.white),
+              child: ListingPhotoImage(
+                photoUrl: photoUrl,
+                fallback: Container(
+                  color: AppColors.lightGreen.withValues(alpha: 0.3),
+                  child: const Center(
+                    child: Icon(Icons.image, size: 40, color: Colors.white),
+                  ),
                 ),
               ),
             ),
@@ -74,7 +76,7 @@ class ListingCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$farmerName · $district',
+                    farmerName != null ? '$farmerName · $district' : district,
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -89,20 +91,21 @@ class ListingCard extends StatelessWidget {
                           color: AppColors.primaryGreen,
                         ),
                       ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            size: 14,
-                            color: AppColors.warning,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            rating.toStringAsFixed(1),
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ],
-                      ),
+                      if (rating != null)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              size: 14,
+                              color: AppColors.warning,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              rating!.toStringAsFixed(1),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ],
