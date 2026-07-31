@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/constants/app_colors.dart';
+import '../../domain/offer_total.dart';
 import '../offer_cubit.dart';
 import '../offer_state.dart';
-import '../../domain/offer_total.dart';
-
-// make offer / negotiate screen
-// TEMP: no auth yet from samuel and no real listing from arnold,
-// so using fake ids for now just so we can test writing to firebase.
-// once auth + listings are ready, swap these 3 lines for the real values.
-const _tempListingId = 'demo-listing-01';
-const _tempBuyerId = 'demo-buyer-01';
-const _tempFarmerId = 'demo-farmer-01';
 
 class MakeOfferPage extends StatefulWidget {
-  final String cropName;
-  final double marketPrice;
-
   const MakeOfferPage({
     super.key,
+    required this.listingId,
+    required this.buyerId,
+    required this.farmerId,
     required this.cropName,
     required this.marketPrice,
+    this.maxQuantityKg,
   });
+
+  final String listingId;
+  final String buyerId;
+  final String farmerId;
+  final String cropName;
+  final double marketPrice;
+  final double? maxQuantityKg;
 
   @override
   State<MakeOfferPage> createState() => _MakeOfferPageState();
@@ -29,12 +30,19 @@ class MakeOfferPage extends StatefulWidget {
 
 class _MakeOfferPageState extends State<MakeOfferPage> {
   late double myPrice;
-  int qty = 10;
+  late int qty;
 
   @override
   void initState() {
     super.initState();
     myPrice = widget.marketPrice;
+    final maxQty = widget.maxQuantityKg?.floor() ?? 9999;
+    qty = maxQty >= 10 ? 10 : maxQty.clamp(1, maxQty);
+  }
+
+  int get _maxQty {
+    final max = widget.maxQuantityKg?.floor() ?? 9999;
+    return max < 1 ? 1 : max;
   }
 
   void changePrice(double amount) {
@@ -42,14 +50,22 @@ class _MakeOfferPageState extends State<MakeOfferPage> {
   }
 
   void changeQty(int amount) {
-    setState(() => qty = (qty + amount).clamp(1, 9999));
+    setState(() => qty = (qty + amount).clamp(1, _maxQty));
   }
 
   void sendOffer() {
+    if (widget.buyerId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please sign in to make an offer.')),
+      );
+      return;
+    }
+
     context.read<OfferCubit>().submitOffer(
-      listingId: _tempListingId,
-      buyerId: _tempBuyerId,
-      farmerId: _tempFarmerId,
+      listingId: widget.listingId,
+      buyerId: widget.buyerId,
+      farmerId: widget.farmerId,
+      cropType: widget.cropName,
       pricePerKg: myPrice,
       quantityKg: qty,
     );
@@ -67,27 +83,32 @@ class _MakeOfferPageState extends State<MakeOfferPage> {
       body: BlocListener<OfferCubit, OfferState>(
         listener: (context, state) {
           if (state.submitStatus == OfferSubmitStatus.success) {
-            showDialog(
+            showDialog<void>(
               context: context,
-              builder: (_) => AlertDialog(
+              builder: (dialogContext) => AlertDialog(
                 title: const Text('Offer Sent'),
                 content: Text(
                   'Offer of ${myPrice.toStringAsFixed(0)} RWF/kg for $qty kg sent.',
                 ),
                 actions: [
                   TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                      Navigator.pop(context);
+                    },
                     child: const Text('OK'),
                   ),
                 ],
               ),
             );
+            context.read<OfferCubit>().resetSubmitStatus();
           } else if (state.submitStatus == OfferSubmitStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.errorMessage ?? 'Something went wrong.'),
               ),
             );
+            context.read<OfferCubit>().resetSubmitStatus();
           }
         },
         child: Padding(
@@ -99,6 +120,13 @@ class _MakeOfferPageState extends State<MakeOfferPage> {
                 'Market price: ${widget.marketPrice.toStringAsFixed(0)} RWF/kg',
                 style: const TextStyle(color: Colors.grey),
               ),
+              if (widget.maxQuantityKg != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  'Available: ${widget.maxQuantityKg!.toStringAsFixed(0)} kg',
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                ),
+              ],
               const SizedBox(height: 24),
               const Text(
                 'Your offer (RWF/kg)',
@@ -181,18 +209,17 @@ class _MakeOfferPageState extends State<MakeOfferPage> {
   }
 }
 
-// used this for both price and qty rows so i'm not repeating the same layout twice
 class PriceStepper extends StatelessWidget {
-  final String value;
-  final VoidCallback onMinus;
-  final VoidCallback onPlus;
-
   const PriceStepper({
     super.key,
     required this.value,
     required this.onMinus,
     required this.onPlus,
   });
+
+  final String value;
+  final VoidCallback onMinus;
+  final VoidCallback onPlus;
 
   @override
   Widget build(BuildContext context) {

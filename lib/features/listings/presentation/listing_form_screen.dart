@@ -304,16 +304,18 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                       ),
                       if (widget.isEditing && !isSold) ...[
                         const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: () => _markSoldOut(),
-                          icon: const Icon(Icons.inventory_2_outlined),
-                          label: const Text('Mark as Sold Out'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.badgeSoldText,
-                            side: const BorderSide(
-                              color: AppColors.badgeSoldText,
+                        SizedBox(
+                          width: 120,
+                          child: OutlinedButton(
+                            onPressed: _markSoldOut,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.badgeSoldText,
+                              side: const BorderSide(
+                                color: AppColors.badgeSoldText,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: const Text('Sold Out'),
                           ),
                         ),
                       ],

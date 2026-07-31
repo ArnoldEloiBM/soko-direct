@@ -5,4 +5,9 @@ import 'offer.dart';
 abstract class OfferRepository {
   Future<void> submitOffer(Offer offer);
   Stream<List<Offer>> watchOffersForListing(String listingId);
+  Stream<List<Offer>> watchOffersForFarmer(String farmerId);
+  Future<void> updateOfferStatus({
+    required String offerId,
+    required String status,
+  });
 }

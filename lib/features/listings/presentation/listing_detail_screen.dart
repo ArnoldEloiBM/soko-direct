@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/role/role_cubit.dart';
 import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../../offers/presentation/pages/make_offer_page.dart';
+import '../../offers/presentation/widgets/listing_offers_panel.dart';
 import '../../ratings/data/rating_repository_impl.dart';
 import '../../ratings/presentation/rating_cubit.dart';
 import '../../ratings/presentation/rating_screen.dart';
@@ -18,14 +19,16 @@ import 'listings_cubit.dart';
 /// [Listing] (passed in via navigation from My Listings or Buyer
 /// search) — this screen does not fetch from Firebase itself.
 class ListingDetailScreen extends StatelessWidget {
-  final Listing listing;
-  final String currentUserId;
-
   const ListingDetailScreen({
     super.key,
     required this.listing,
     required this.currentUserId,
+    this.showOffersOnOpen = false,
   });
+
+  final Listing listing;
+  final String currentUserId;
+  final bool showOffersOnOpen;
 
   bool _isFarmer(BuildContext context) {
     final authRole = context.read<AuthCubit>().state.user?.role;
@@ -235,15 +238,27 @@ class ListingDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   if (canManage && !isSoldOut) ...[
-                    OutlinedButton.icon(
-                      icon: const Icon(Icons.inventory_2_outlined),
-                      label: const Text('Mark as Sold Out'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.badgeSoldText,
-                        side: const BorderSide(color: AppColors.badgeSoldText),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                    SizedBox(
+                      width: 120,
+                      child: OutlinedButton(
+                        onPressed: () => _confirmMarkSoldOut(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.badgeSoldText,
+                          side: const BorderSide(color: AppColors.badgeSoldText),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text('Sold Out'),
                       ),
-                      onPressed: () => _confirmMarkSoldOut(context),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      showOffersOnOpen ? 'Offers on this listing' : 'Offers',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    ListingOffersPanel(
+                      listingId: listing.id,
+                      showPendingOnly: false,
                     ),
                     const SizedBox(height: 12),
                   ],
@@ -256,8 +271,12 @@ class ListingDetailScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => MakeOfferPage(
+                              listingId: listing.id,
+                              buyerId: currentUserId,
+                              farmerId: listing.sellerId,
                               cropName: listing.cropType,
                               marketPrice: listing.pricePerKg,
+                              maxQuantityKg: listing.quantityKg,
                             ),
                           ),
                         );

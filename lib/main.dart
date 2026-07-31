@@ -17,6 +17,7 @@ import 'features/listings/domain/listings_domain.dart';
 import 'features/listings/domain/listings_repository.dart';
 import 'features/listings/presentation/listings_cubit.dart';
 import 'features/offers/data/offer_repository_impl.dart';
+import 'features/offers/presentation/farmer_offers_cubit.dart';
 import 'features/offers/presentation/offer_cubit.dart';
 import 'features/wallet/data/fake_wallet_repository.dart';
 import 'features/wallet/presentation/wallet_cubit.dart';
@@ -60,6 +61,7 @@ void main() async {
         BlocProvider(
           create: (_) => OfferCubit(repository: OfferRepositoryImpl()),
         ),
+        BlocProvider(create: (_) => FarmerOffersCubit()),
 
         // Dorian — wallet.
         BlocProvider(create: (_) => WalletCubit(FakeWalletRepository())),
