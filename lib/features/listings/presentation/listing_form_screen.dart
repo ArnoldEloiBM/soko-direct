@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/role/role_cubit.dart';
+import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../domain/listing.dart';
 import '../domain/listing_input.dart';
 import '../domain/listing_options.dart';
@@ -54,9 +56,76 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
     super.dispose();
   }
 
+  Future<void> _markSoldOut() async {
+    final listing = widget.listing;
+    if (listing == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Mark as sold out?'),
+        content: Text(
+          'Buyers will no longer see ${listing.cropType} in Browse.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Mark Sold Out'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final success = await context.read<ListingsCubit>().updateListing(
+      listingId: listing.id,
+      input: ListingInput(
+        cropType: listing.cropType,
+        pricePerKg: listing.pricePerKg,
+        quantityKg: 0,
+        availableFrom: listing.availableFrom,
+        location: listing.location,
+        existingPhotoUrl: listing.photoUrl,
+      ),
+    );
+
+    if (success && mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  bool _isFarmer(BuildContext context) {
+    final authRole = context.read<AuthCubit>().state.user?.role;
+    if (authRole != null && authRole != UserRole.none) {
+      return authRole == UserRole.farmer;
+    }
+    return context.read<RoleCubit>().state == UserRole.farmer;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isSold = widget.listing?.isSoldOut ?? false;
+    final isFarmer = _isFarmer(context);
+
+    if (!isFarmer) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Sell Produce')),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              'Only farmers can create or edit listings.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -233,6 +302,21 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                           );
                         },
                       ),
+                      if (widget.isEditing && !isSold) ...[
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () => _markSoldOut(),
+                          icon: const Icon(Icons.inventory_2_outlined),
+                          label: const Text('Mark as Sold Out'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.badgeSoldText,
+                            side: const BorderSide(
+                              color: AppColors.badgeSoldText,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

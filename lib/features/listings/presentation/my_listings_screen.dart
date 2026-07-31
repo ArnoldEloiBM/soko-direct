@@ -27,9 +27,16 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ListingsCubit, ListingsState>(
-      listenWhen: (previous, current) =>
-          previous.errorMessage != current.errorMessage ||
-          previous.successMessage != current.successMessage,
+      listenWhen: (previous, current) {
+        if (current.successMessage != null &&
+            current.successMessage != previous.successMessage) {
+          return true;
+        }
+        // Only surface errors from create/update/delete — not stream load failures.
+        return current.errorMessage != null &&
+            current.errorMessage != previous.errorMessage &&
+            previous.isBusy;
+      },
       listener: (context, state) {
         final message = state.errorMessage ?? state.successMessage;
         if (message != null) {

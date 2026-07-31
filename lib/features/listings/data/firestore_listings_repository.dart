@@ -27,33 +27,33 @@ class FirestoreListingsRepository implements ListingsRepository {
     return ListingOptions.photoAssetFor(input.cropType);
   }
 
+  List<Listing> _sortedListings(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) {
+    final listings = snapshot.docs
+        .map(ListingModel.fromFirestore)
+        .map((model) => model.toEntity())
+        .toList();
+    listings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return listings;
+  }
+
   @override
   Stream<List<Listing>> watchUserListings(String sellerId) {
+    // Sort client-side to avoid requiring a composite Firestore index.
     return _firestore
         .collection(ListingModel.collectionName)
         .where('sellerId', isEqualTo: sellerId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map(ListingModel.fromFirestore)
-              .map((model) => model.toEntity())
-              .toList(),
-        );
+        .map(_sortedListings);
   }
 
   @override
   Stream<List<Listing>> watchAllListings() {
     return _firestore
         .collection(ListingModel.collectionName)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map(ListingModel.fromFirestore)
-              .map((model) => model.toEntity())
-              .toList(),
-        );
+        .map(_sortedListings);
   }
 
   @override
