@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 /// Colors.green everywhere in random screens.
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
-        brightness: Brightness.light,
-        useMaterial3: true,
-        colorSchemeSeed: Colors.green,
-        scaffoldBackgroundColor: Colors.white,
-      );
+    brightness: Brightness.light,
+    useMaterial3: true,
+    colorSchemeSeed: Colors.green,
+    scaffoldBackgroundColor: Colors.white,
+  );
 
   static ThemeData get darkTheme => ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: true,
-        colorSchemeSeed: Colors.green,
-        scaffoldBackgroundColor: const Color(0xFF121212),
-      );
+    brightness: Brightness.dark,
+    useMaterial3: true,
+    colorSchemeSeed: Colors.green,
+    scaffoldBackgroundColor: const Color(0xFF121212),
+  );
 }

@@ -17,8 +17,9 @@ class SokoDirectApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode:
-              themeMode == AppThemeMode.dark ? ThemeMode.dark : ThemeMode.light,
+          themeMode: themeMode == AppThemeMode.dark
+              ? ThemeMode.dark
+              : ThemeMode.light,
           home: const HomePlaceholder(),
         );
       },
