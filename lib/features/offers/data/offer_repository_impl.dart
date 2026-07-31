@@ -8,7 +8,7 @@ class OfferRepositoryImpl implements OfferRepository {
   final FirebaseFirestore _firestore;
 
   OfferRepositoryImpl({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _offersRef =>
       _firestore.collection('offers');
@@ -32,18 +32,20 @@ class OfferRepositoryImpl implements OfferRepository {
         .where('listingId', isEqualTo: listingId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              final data = doc.data();
-              return Offer(
-                id: doc.id,
-                listingId: data['listingId'] as String,
-                buyerId: data['buyerId'] as String,
-                farmerId: data['farmerId'] as String,
-                pricePerKg: (data['pricePerKg'] as num).toDouble(),
-                quantityKg: data['quantityKg'] as int,
-                status: data['status'] as String,
-                createdAt: (data['createdAt'] as Timestamp).toDate(),
-              );
-            }).toList());
+        .map(
+          (snapshot) => snapshot.docs.map((doc) {
+            final data = doc.data();
+            return Offer(
+              id: doc.id,
+              listingId: data['listingId'] as String,
+              buyerId: data['buyerId'] as String,
+              farmerId: data['farmerId'] as String,
+              pricePerKg: (data['pricePerKg'] as num).toDouble(),
+              quantityKg: data['quantityKg'] as int,
+              status: data['status'] as String,
+              createdAt: (data['createdAt'] as Timestamp).toDate(),
+            );
+          }).toList(),
+        );
   }
 }

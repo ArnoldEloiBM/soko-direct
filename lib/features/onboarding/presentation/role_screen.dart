@@ -18,17 +18,18 @@ class RoleScreen extends StatelessWidget {
     await context.read<RoleCubit>().setRole(role);
     if (!context.mounted) return;
     // TODO(Samuel): route to registration/login instead once auth is ready.
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainShell()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const MainShell()));
   }
 
   @override
   Widget build(BuildContext context) {
     // Rebuilds when the language changes, so all labels are localized.
     final language = context.watch<LanguageCubit>().state;
-    final strings =
-        AppStrings(language == AppLanguage.kinyarwanda ? 'rw' : 'en');
+    final strings = AppStrings(
+      language == AppLanguage.kinyarwanda ? 'rw' : 'en',
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFF2E7D32),

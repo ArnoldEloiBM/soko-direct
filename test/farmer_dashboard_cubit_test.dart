@@ -13,8 +13,7 @@ class BrokenMarketRepository implements MarketRepository {
 
 void main() {
   group('FarmerDashboardCubit', () {
-    test('emits Loading then Loaded with prices from the repository',
-        () async {
+    test('emits Loading then Loaded with prices from the repository', () async {
       final cubit = FarmerDashboardCubit(FakeMarketRepository());
 
       final states = <FarmerDashboardState>[];

@@ -16,6 +16,11 @@ class MarketPrice extends Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [cropType, averagePrice, minPrice, maxPrice, listingCount];
+  List<Object?> get props => [
+    cropType,
+    averagePrice,
+    minPrice,
+    maxPrice,
+    listingCount,
+  ];
 }

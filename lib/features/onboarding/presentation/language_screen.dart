@@ -15,9 +15,9 @@ class LanguageScreen extends StatelessWidget {
   Future<void> _choose(BuildContext context, AppLanguage language) async {
     await context.read<LanguageCubit>().setLanguage(language);
     if (!context.mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const RoleScreen()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const RoleScreen()));
   }
 
   @override

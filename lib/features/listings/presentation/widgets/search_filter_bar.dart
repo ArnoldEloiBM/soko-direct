@@ -16,7 +16,14 @@ class _SearchFilterBarState extends State<SearchFilterBar> {
   final TextEditingController searchCtrl = TextEditingController();
   String? pickedCrop;
 
-  final crops = ['All', 'Tomatoes', 'Onions', 'Green Peppers', 'Potatoes', 'Cabbage'];
+  final crops = [
+    'All',
+    'Tomatoes',
+    'Onions',
+    'Green Peppers',
+    'Potatoes',
+    'Cabbage',
+  ];
 
   void updateParent() {
     widget.onChanged(searchCtrl.text, pickedCrop == 'All' ? null : pickedCrop);
@@ -50,7 +57,8 @@ class _SearchFilterBarState extends State<SearchFilterBar> {
             separatorBuilder: (_, __) => const SizedBox(width: 8),
             itemBuilder: (context, i) {
               final crop = crops[i];
-              final selected = pickedCrop == crop || (pickedCrop == null && crop == 'All');
+              final selected =
+                  pickedCrop == crop || (pickedCrop == null && crop == 'All');
               return ChoiceChip(
                 label: Text(crop),
                 selected: selected,

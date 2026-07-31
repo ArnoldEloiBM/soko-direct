@@ -7,8 +7,9 @@ import 'package:soko_direct/core/role/role_cubit.dart';
 import 'package:soko_direct/features/onboarding/presentation/language_screen.dart';
 
 void main() {
-  testWidgets('language screen shows both options and saves the tapped one',
-      (tester) async {
+  testWidgets('language screen shows both options and saves the tapped one', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final languageCubit = LanguageCubit();
     final roleCubit = RoleCubit();

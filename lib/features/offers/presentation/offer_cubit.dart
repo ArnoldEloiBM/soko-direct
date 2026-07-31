@@ -9,19 +9,21 @@ class OfferCubit extends Cubit<OfferState> {
   StreamSubscription<List<Offer>>? _subscription;
 
   OfferCubit({required OfferRepository repository})
-      : _repository = repository,
-        super(const OfferState());
+    : _repository = repository,
+      super(const OfferState());
 
   ///Starts listening to offers made on [listingId]. Call this once
   ///when the listing detail screen opens (so the farmer sees new
   ///offers coming in live).
   void watchOffersForListing(String listingId) {
     _subscription?.cancel();
-    _subscription = _repository.watchOffersForListing(listingId).listen(
-      (offers) => emit(state.copyWith(offers: offers)),
-      onError: (_) =>
-          emit(state.copyWith(errorMessage: 'Could not load offers.')),
-    );
+    _subscription = _repository
+        .watchOffersForListing(listingId)
+        .listen(
+          (offers) => emit(state.copyWith(offers: offers)),
+          onError: (_) =>
+              emit(state.copyWith(errorMessage: 'Could not load offers.')),
+        );
   }
 
   Future<void> submitOffer({
@@ -46,10 +48,12 @@ class OfferCubit extends Cubit<OfferState> {
       await _repository.submitOffer(offer);
       emit(state.copyWith(submitStatus: OfferSubmitStatus.success));
     } catch (_) {
-      emit(state.copyWith(
-        submitStatus: OfferSubmitStatus.failure,
-        errorMessage: 'Could not submit offer. Try again.',
-      ));
+      emit(
+        state.copyWith(
+          submitStatus: OfferSubmitStatus.failure,
+          errorMessage: 'Could not submit offer. Try again.',
+        ),
+      );
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../domain/market_price_model.dart';
+
 abstract class FarmerDashboardState extends Equatable {
   const FarmerDashboardState();
 

@@ -1,3 +1,4 @@
+import '../../../../core/role/role_cubit.dart';
 import '../entities/app_user.dart';
 
 /// The "rules" for authentication. No Firebase types appear here — only

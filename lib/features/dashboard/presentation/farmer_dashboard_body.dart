@@ -6,6 +6,7 @@ import '../../../core/language/language_cubit.dart';
 import '../domain/market_price_model.dart';
 import 'farmer_dashboard_cubit.dart';
 import 'farmer_dashboard_state.dart';
+
 class FarmerDashboardBody extends StatefulWidget {
   const FarmerDashboardBody({super.key});
 
@@ -23,16 +24,17 @@ class _FarmerDashboardBodyState extends State<FarmerDashboardBody> {
   @override
   Widget build(BuildContext context) {
     final language = context.watch<LanguageCubit>().state;
-    final strings =
-        AppStrings(language == AppLanguage.kinyarwanda ? 'rw' : 'en');
+    final strings = AppStrings(
+      language == AppLanguage.kinyarwanda ? 'rw' : 'en',
+    );
 
     return BlocConsumer<FarmerDashboardCubit, FarmerDashboardState>(
       listener: (context, state) {
         // Graceful error handling with a snackbar (rubric: CRUD criterion).
         if (state is FarmerDashboardError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(strings.get('errorGeneric'))),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(strings.get('errorGeneric'))));
         }
       },
       builder: (context, state) {
@@ -89,10 +91,8 @@ class _FarmerDashboardBodyState extends State<FarmerDashboardBody> {
                       mainAxisExtent: 110,
                     ),
                     itemCount: prices.length,
-                    itemBuilder: (context, index) => _PriceCard(
-                      price: prices[index],
-                      strings: strings,
-                    ),
+                    itemBuilder: (context, index) =>
+                        _PriceCard(price: prices[index], strings: strings),
                   );
                 },
               ),

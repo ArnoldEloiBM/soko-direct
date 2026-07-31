@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/app_user.dart';
+import '../../../../core/role/role_cubit.dart';
 
 /// Farmer/Buyer picker shown on the register screen (and on the login
 /// screen, since a first-time Google sign-in also needs a role).

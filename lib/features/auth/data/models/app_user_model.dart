@@ -1,3 +1,4 @@
+import '../../../../core/role/role_cubit.dart';
 import '../../domain/entities/app_user.dart';
 
 /// Adds Firestore (de)serialization on top of the plain [AppUser] entity.

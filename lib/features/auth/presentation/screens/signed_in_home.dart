@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/role/role_cubit.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../transactions/presentation/screens/transaction_history_screen.dart';
-import '../../domain/entities/app_user.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 

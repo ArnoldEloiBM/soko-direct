@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// The two kinds of accounts Soko Direct supports.
-enum UserRole { farmer, buyer }
+import '../../../../core/role/role_cubit.dart';
 
 /// The authenticated user, merged from Firebase Auth + their Firestore
 /// profile document (see ERD: `users/{uid}`).

@@ -1,6 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:soko_direct/features/auth/domain/entities/app_user.dart';
+import 'package:soko_direct/core/role/role_cubit.dart';
 import 'package:soko_direct/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:soko_direct/features/auth/presentation/cubit/auth_state.dart';
 
