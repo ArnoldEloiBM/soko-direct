@@ -9,6 +9,8 @@ import 'features/auth/data/repositories/firebase_auth_repository.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/offers/presentation/offer_cubit.dart';
 import 'features/offers/data/offer_repository_impl.dart';
+import 'features/wallet/data/fake_wallet_repository.dart';
+import 'features/wallet/presentation/wallet_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +29,7 @@ void main() async {
         BlocProvider(
           create: (_) => OfferCubit(repository: OfferRepositoryImpl()),
         ),
+        BlocProvider(create: (_) => WalletCubit(FakeWalletRepository())),
 
         // Teammates: add yours here, e.g.
         // BlocProvider(create: (_) => ListingsCubit(listingsRepository: ListingsRepository())),

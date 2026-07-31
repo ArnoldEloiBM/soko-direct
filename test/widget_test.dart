@@ -6,8 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soko_direct/app.dart';
 import 'package:soko_direct/core/theme/theme_cubit.dart';
 import 'package:soko_direct/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:soko_direct/features/wallet/data/fake_wallet_repository.dart';
+import 'package:soko_direct/features/wallet/presentation/wallet_cubit.dart';
+import 'package:soko_direct/features/wallet/presentation/wallet_screen.dart';
 
 import 'helpers/fake_auth_repository.dart';
+
+Widget _walletScreenUnderTest() {
+  return MaterialApp(
+    home: MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => AuthCubit(authRepository: FakeAuthRepository())),
+        BlocProvider(create: (_) => WalletCubit(FakeWalletRepository())),
+      ],
+      child: const WalletScreen(),
+    ),
+  );
+}
 
 void main() {
   testWidgets('cold start shows the login screen when signed out', (
@@ -63,4 +78,15 @@ void main() {
       expect(updatedApp.themeMode, ThemeMode.dark);
     },
   );
+
+  testWidgets('Wallet screen loads and shows the balance', (tester) async {
+    await tester.pumpWidget(_walletScreenUnderTest());
+
+    // Let the async loadWallet() call inside WalletScreen finish.
+    await tester.pumpAndSettle();
+
+    expect(find.text('Wallet'), findsOneWidget);
+    expect(find.textContaining('RWF'), findsWidgets);
+    expect(find.text('Provider: MTN'), findsOneWidget);
+  });
 }
