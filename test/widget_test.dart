@@ -25,5 +25,9 @@ void main() {
     expect(find.text('SOKO DIRECT'), findsOneWidget);
     expect(find.text('Connecting Farmers to Buyers'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    // Flush the splash timer (and the navigation it triggers) so no
+    // timers are pending when the test ends.
+    await tester.pumpAndSettle(const Duration(milliseconds: 1500));
   });
 }
