@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../domain/market_price_model.dart';
 import '../domain/market_repository.dart';
+
 class FirestoreMarketRepository implements MarketRepository {
   final FirebaseFirestore _firestore;
 
   FirestoreMarketRepository({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   Stream<List<MarketPrice>> watchMarketPrices() {
@@ -40,8 +41,7 @@ class FirestoreMarketRepository implements MarketRepository {
         maxPrice: prices.reduce((a, b) => a > b ? a : b),
         listingCount: prices.length,
       );
-    }).toList()
-      ..sort((a, b) => a.cropType.compareTo(b.cropType));
+    }).toList()..sort((a, b) => a.cropType.compareTo(b.cropType));
 
     return result;
   }

@@ -34,9 +34,9 @@ class _SplashScreenState extends State<SplashScreen> {
         // TODO(Samuel): returning users should pass through your auth gate
         // (login screen if signed out) before reaching MainShell.
         : const MainShell();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => next),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => next));
   }
 
   @override

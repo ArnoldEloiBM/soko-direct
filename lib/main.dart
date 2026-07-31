@@ -8,13 +8,14 @@ import 'core/role/role_cubit.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/dashboard/data/firestore_market_repository.dart';
 import 'features/dashboard/presentation/farmer_dashboard_cubit.dart';
+import 'features/offers/data/offer_repository_impl.dart';
+import 'features/offers/presentation/offer_cubit.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Guard avoids a duplicate-app crash on Android, which can auto-init
-  // from google-services.json.
+  // Guard avoids a duplicate-app crash on Android auto-init.
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -22,8 +23,6 @@ void main() async {
   }
 
   runApp(
-    // Every feature's Cubit gets registered here ONCE, so any screen
-    // can reach it with context.read<XCubit>().
     MultiBlocProvider(
       providers: [
         // Core preferences — the 3 persisted settings (theme/language/role).
@@ -36,9 +35,10 @@ void main() async {
           create: (_) => FarmerDashboardCubit(FirestoreMarketRepository()),
         ),
 
-        // Teammates: add yours here, e.g.
-        // BlocProvider(create: (_) => ListingsCubit(domain: ..., authRepository: ...)),
-        // BlocProvider(create: (_) => WalletCubit(FakeWalletRepository())),
+        // Dorcas — offers / negotiation.
+        BlocProvider(
+          create: (_) => OfferCubit(repository: OfferRepositoryImpl()),
+        ),
       ],
       child: const SokoDirectApp(),
     ),
