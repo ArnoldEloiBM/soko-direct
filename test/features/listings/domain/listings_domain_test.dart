@@ -27,7 +27,7 @@ void main() {
         quantityKg: 50,
         availableFrom: DateTime.now().add(const Duration(days: 1)),
         location: 'Musanze',
-        photoPath: '/tmp/photo.jpg',
+        photoPath: 'assets/images/tomatoes.jpg',
       );
 
       expect(
@@ -43,7 +43,7 @@ void main() {
         quantityKg: 50,
         availableFrom: DateTime.now().add(const Duration(days: 1)),
         location: 'Musanze',
-        photoPath: '/tmp/photo.jpg',
+        photoPath: 'assets/images/tomatoes.jpg',
       );
 
       final listing = await domain.createListing(
@@ -63,7 +63,7 @@ void main() {
         quantityKg: 0,
         availableFrom: DateTime.now().add(const Duration(days: 1)),
         location: 'Musanze',
-        photoPath: '/tmp/photo.jpg',
+        photoPath: 'assets/images/tomatoes.jpg',
       );
 
       expect(
@@ -79,7 +79,7 @@ void main() {
         quantityKg: 50,
         availableFrom: DateTime.now().add(const Duration(days: 1)),
         location: 'Musanze',
-        photoPath: '/tmp/photo.jpg',
+        photoPath: 'assets/images/tomatoes.jpg',
       );
 
       final created = await domain.createListing(

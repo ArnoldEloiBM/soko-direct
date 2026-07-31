@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/time_ago.dart';
 import '../domain/listing.dart';
 import '../domain/listing_options.dart';
+import 'listing_photo.dart';
 
 class ListingCard extends StatelessWidget {
   const ListingCard({
@@ -116,10 +117,9 @@ class _CropThumbnail extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: photoUrl.isNotEmpty
-          ? Image.network(
-              photoUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => _emojiFallback(),
+          ? ListingPhotoImage(
+              photoUrl: photoUrl,
+              fallback: _emojiFallback(),
             )
           : _emojiFallback(),
     );

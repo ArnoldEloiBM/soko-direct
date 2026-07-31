@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:soko_direct/features/listings/domain/listing.dart';
 import 'package:soko_direct/features/listings/domain/listing_input.dart';
+import 'package:soko_direct/features/listings/domain/listing_options.dart';
 import 'package:soko_direct/features/listings/domain/listing_status.dart';
 import 'package:soko_direct/features/listings/domain/listings_repository.dart';
 
@@ -46,7 +47,9 @@ class FakeListingsRepository implements ListingsRepository {
       quantityKg: input.quantityKg,
       availableFrom: input.availableFrom,
       location: input.location,
-      photoUrl: input.existingPhotoUrl ?? '',
+      photoUrl: input.photoPath ??
+          input.existingPhotoUrl ??
+          ListingOptions.photoAssetFor(input.cropType),
       status: ListingStatus.active,
       offerCount: 0,
       createdAt: DateTime.now(),
@@ -84,6 +87,9 @@ class FakeListingsRepository implements ListingsRepository {
       quantityKg: input.quantityKg,
       availableFrom: input.availableFrom,
       location: input.location,
+      photoUrl: input.photoPath ??
+          input.existingPhotoUrl ??
+          existing.photoUrl,
       status: resolvedStatus,
       updatedAt: now,
     );

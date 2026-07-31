@@ -1,26 +1,30 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../domain/listing.dart';
 import '../domain/listing_input.dart';
+import '../domain/listing_options.dart';
 import '../domain/listing_status.dart';
 import '../domain/listings_repository.dart';
 import 'listing_model.dart';
 
 class FirestoreListingsRepository implements ListingsRepository {
-  FirestoreListingsRepository({
-    FirebaseFirestore? firestore,
-    FirebaseStorage? storage,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _storage = storage ?? FirebaseStorage.instance;
+  FirestoreListingsRepository({FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
-  final FirebaseStorage _storage;
 
   String _newListingId() {
     return _firestore.collection(ListingModel.collectionName).doc().id;
+  }
+
+  String _resolvePhotoUrl(ListingInput input) {
+    if (input.photoPath != null && input.photoPath!.isNotEmpty) {
+      return input.photoPath!;
+    }
+    if (input.existingPhotoUrl != null && input.existingPhotoUrl!.isNotEmpty) {
+      return input.existingPhotoUrl!;
+    }
+    return ListingOptions.photoAssetFor(input.cropType);
   }
 
   @override
@@ -58,11 +62,7 @@ class FirestoreListingsRepository implements ListingsRepository {
     required ListingInput input,
   }) async {
     final listingId = _newListingId();
-    final photoUrl = await _uploadPhoto(
-      sellerId: sellerId,
-      listingId: listingId,
-      localPath: input.photoPath!,
-    );
+    final photoUrl = _resolvePhotoUrl(input);
 
     final now = DateTime.now();
     final docRef = _firestore
@@ -93,16 +93,7 @@ class FirestoreListingsRepository implements ListingsRepository {
     required String sellerId,
     required ListingInput input,
   }) async {
-    var photoUrl = input.existingPhotoUrl ?? '';
-
-    if (input.photoPath != null && input.photoPath!.isNotEmpty) {
-      await _deletePhoto(sellerId: sellerId, listingId: listingId);
-      photoUrl = await _uploadPhoto(
-        sellerId: sellerId,
-        listingId: listingId,
-        localPath: input.photoPath!,
-      );
-    }
+    final photoUrl = _resolvePhotoUrl(input);
 
     final docRef = _firestore
         .collection(ListingModel.collectionName)
@@ -163,32 +154,6 @@ class FirestoreListingsRepository implements ListingsRepository {
       throw StateError('Permission denied');
     }
 
-    await _deletePhoto(sellerId: sellerId, listingId: listingId);
     await docRef.delete();
-  }
-
-  Future<String> _uploadPhoto({
-    required String sellerId,
-    required String listingId,
-    required String localPath,
-  }) async {
-    final file = File(localPath);
-    final ref = _storage.ref().child('listings/$sellerId/$listingId.jpg');
-    await ref.putFile(file);
-    return ref.getDownloadURL();
-  }
-
-  Future<void> _deletePhoto({
-    required String sellerId,
-    required String listingId,
-  }) async {
-    final ref = _storage.ref().child('listings/$sellerId/$listingId.jpg');
-    try {
-      await ref.delete();
-    } on FirebaseException catch (error) {
-      if (error.code != 'object-not-found') {
-        rethrow;
-      }
-    }
   }
 }

@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../domain/listing.dart';
 import '../domain/listing_input.dart';
 import '../domain/listing_options.dart';
+import 'listing_photo.dart';
 import 'listings_cubit.dart';
 import 'listings_state.dart';
 
@@ -39,6 +37,9 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
     _cropType = listing?.cropType ?? ListingOptions.cropTypes.first;
     _location = listing?.location ?? ListingOptions.locations.first;
     _availableFrom = listing?.availableFrom;
+    _photoPath = listing != null && ListingOptions.isAssetPhoto(listing.photoUrl)
+        ? listing.photoUrl
+        : ListingOptions.photoAssetFor(_cropType);
     if (listing != null) {
       _priceController.text = listing.pricePerKg.toStringAsFixed(0);
       _quantityController.text = listing.quantityKg.toStringAsFixed(0);
@@ -105,7 +106,10 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                         value: _cropType,
                         onChanged: (value) {
                           if (value != null) {
-                            setState(() => _cropType = value);
+                            setState(() {
+                              _cropType = value;
+                              _photoPath = ListingOptions.photoAssetFor(value);
+                            });
                           }
                         },
                       ),
@@ -190,10 +194,9 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      _PhotoPicker(
-                        photoPath: _photoPath,
-                        existingPhotoUrl: widget.listing?.photoUrl,
-                        onTap: _pickPhoto,
+                      _PresetPhotoPicker(
+                        selectedPhotoPath: _photoPath,
+                        onSelected: (path) => setState(() => _photoPath = path),
                       ),
                       const SizedBox(height: 24),
                       BlocBuilder<ListingsCubit, ListingsState>(
@@ -267,17 +270,6 @@ class _ListingFormScreenState extends State<ListingFormScreen> {
     );
     if (picked != null) {
       setState(() => _availableFrom = picked);
-    }
-  }
-
-  Future<void> _pickPhoto() async {
-    final picker = ImagePicker();
-    final image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-    if (image != null) {
-      setState(() => _photoPath = image.path);
     }
   }
 
@@ -476,56 +468,115 @@ class _MarketPriceBanner extends StatelessWidget {
   }
 }
 
-class _PhotoPicker extends StatelessWidget {
-  const _PhotoPicker({
-    required this.photoPath,
-    required this.existingPhotoUrl,
-    required this.onTap,
+class _PresetPhotoPicker extends StatelessWidget {
+  const _PresetPhotoPicker({
+    required this.selectedPhotoPath,
+    required this.onSelected,
   });
 
-  final String? photoPath;
-  final String? existingPhotoUrl;
-  final VoidCallback onTap;
+  final String? selectedPhotoPath;
+  final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    Widget preview;
-    if (photoPath != null) {
-      preview = Image.file(File(photoPath!), fit: BoxFit.cover);
-    } else if (existingPhotoUrl != null && existingPhotoUrl!.isNotEmpty) {
-      preview = Image.network(existingPhotoUrl!, fit: BoxFit.cover);
-    } else {
-      preview = Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(
-            Icons.photo_camera_outlined,
-            size: 36,
-            color: AppColors.captionGrey,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const _FieldLabel('Produce Photo'),
+        if (selectedPhotoPath != null) ...[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              height: 140,
+              width: double.infinity,
+              child: ListingPhotoImage(
+                photoUrl: selectedPhotoPath!,
+                fallback: _selectedFallback(),
+              ),
+            ),
           ),
-          SizedBox(height: 8),
-          Text(
-            'Tap to upload produce photo',
-            style: TextStyle(color: AppColors.captionGrey),
-          ),
+          const SizedBox(height: 12),
         ],
-      );
-    }
+        SizedBox(
+          height: 88,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: ListingOptions.presetPhotoAssets.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              final assetPath = ListingOptions.presetPhotoAssets[index];
+              final cropType = ListingOptions.cropPhotoAssets.entries
+                  .firstWhere((entry) => entry.value == assetPath)
+                  .key;
+              final isSelected = assetPath == selectedPhotoPath;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        height: 140,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.cardBorder,
-            style: BorderStyle.solid,
+              return InkWell(
+                onTap: () => onSelected(assetPath),
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  width: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.primaryGreen
+                          : AppColors.cardBorder,
+                      width: isSelected ? 2 : 1,
+                    ),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListingPhotoImage(
+                          photoUrl: assetPath,
+                          fallback: Center(
+                            child: Text(
+                              ListingOptions.emojiFor(cropType),
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        color: isSelected
+                            ? AppColors.primaryGreen
+                            : Colors.grey.shade100,
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          cropType.split(' ').first,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.subtitleGrey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: preview,
+      ],
+    );
+  }
+
+  Widget _selectedFallback() {
+    return Container(
+      color: AppColors.marketPriceBg,
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.image_outlined,
+        size: 36,
+        color: AppColors.captionGrey,
       ),
     );
   }

@@ -104,9 +104,9 @@ class ListingsDomain {
     if (!ListingOptions.locations.contains(input.location)) {
       throw const ListingsDomainException('Please select a valid location.');
     }
-    if (requirePhoto && (input.photoPath == null || input.photoPath!.isEmpty)) {
+    if (requirePhoto && !ListingOptions.isPresetPhoto(input.photoPath ?? '')) {
       throw const ListingsDomainException(
-        'Please add a photo of your produce.',
+        'Please select a produce photo.',
       );
     }
   }
