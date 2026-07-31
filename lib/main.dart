@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'app.dart';
 import 'core/theme/theme_cubit.dart';
@@ -10,11 +11,11 @@ import 'features/listings/data/firestore_listings_repository.dart';
 import 'features/listings/domain/listings_domain.dart';
 import 'features/listings/domain/listings_repository.dart';
 import 'features/listings/presentation/listings_cubit.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Avoid duplicate-app crash when Android auto-inits from google-services.json.
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
