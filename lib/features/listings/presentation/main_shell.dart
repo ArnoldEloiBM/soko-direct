@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../wallet/presentation/wallet_screen.dart';
 import 'my_listings_screen.dart';
 
 class MainShell extends StatefulWidget {
@@ -15,13 +16,18 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Wallet brings its own AppBar/Scaffold, so skip the green header
+    // here to avoid showing two title bars stacked on top of each other.
+    final showHeader = _currentIndex != 3;
+
     return Scaffold(
       body: Column(
         children: [
-          _ScreenHeader(
-            title: _titleForIndex(_currentIndex),
-            subtitle: _subtitleForIndex(_currentIndex),
-          ),
+          if (showHeader)
+            _ScreenHeader(
+              title: _titleForIndex(_currentIndex),
+              subtitle: _subtitleForIndex(_currentIndex),
+            ),
           Expanded(child: _bodyForIndex(_currentIndex)),
         ],
       ),
@@ -84,6 +90,7 @@ class _MainShellState extends State<MainShell> {
   Widget _bodyForIndex(int index) {
     return switch (index) {
       1 => const MyListingsScreen(),
+      3 => const WalletScreen(),
       _ => Center(
         child: Text(
           '${_titleForIndex(index)} coming soon',

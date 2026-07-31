@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../domain/listing.dart';
 import 'listing_card.dart';
+import 'listing_detail_screen.dart';
 import 'listing_form_screen.dart';
 import 'listings_cubit.dart';
 import 'listings_state.dart';
@@ -99,10 +101,22 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
         final listing = state.listings[index];
         return ListingCard(
           listing: listing,
-          onTap: () => _openForm(context, listing: listing),
+          onTap: () => _openDetail(context, listing),
           onDelete: () => _confirmDelete(context, listing),
         );
       },
+    );
+  }
+
+  Future<void> _openDetail(BuildContext context, Listing listing) async {
+    final currentUserId = context.read<AuthCubit>().state.user?.id ?? '';
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => ListingDetailScreen(
+          listing: listing,
+          currentUserId: currentUserId,
+        ),
+      ),
     );
   }
 
