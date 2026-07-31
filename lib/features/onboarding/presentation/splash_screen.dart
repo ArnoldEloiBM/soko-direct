@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/role/role_cubit.dart';
-import '../../listings/presentation/screens/main_shell.dart';
+import '../../listings/presentation/main_shell.dart';
 import 'language_screen.dart';
 
 /// Cold-start screen (video step 1). Shows the Soko Direct branding, then:
