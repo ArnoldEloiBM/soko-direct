@@ -5,6 +5,8 @@ import 'listing_input.dart';
 abstract class ListingsRepository {
   Stream<List<Listing>> watchUserListings(String sellerId);
 
+  Stream<List<Listing>> watchAllListings();
+
   Future<Listing> createListing({
     required String sellerId,
     required ListingInput input,

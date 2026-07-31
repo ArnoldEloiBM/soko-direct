@@ -21,6 +21,14 @@ class FakeListingsRepository implements ListingsRepository {
     }
   }
 
+  @override
+  Stream<List<Listing>> watchAllListings() async* {
+    yield List.unmodifiable(_listings);
+    await for (final _ in _controller.stream) {
+      yield List.unmodifiable(_listings);
+    }
+  }
+
   List<Listing> _filtered(String sellerId) {
     return _listings.where((item) => item.sellerId == sellerId).toList();
   }

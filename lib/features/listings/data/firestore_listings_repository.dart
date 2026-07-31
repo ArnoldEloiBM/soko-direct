@@ -39,6 +39,20 @@ class FirestoreListingsRepository implements ListingsRepository {
   }
 
   @override
+  Stream<List<Listing>> watchAllListings() {
+    return _firestore
+        .collection(ListingModel.collectionName)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(ListingModel.fromFirestore)
+              .map((model) => model.toEntity())
+              .toList(),
+        );
+  }
+
+  @override
   Future<Listing> createListing({
     required String sellerId,
     required ListingInput input,
