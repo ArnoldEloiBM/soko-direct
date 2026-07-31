@@ -17,9 +17,9 @@ class FarmerDashboardCubit extends Cubit<FarmerDashboardState> {
     emit(FarmerDashboardLoading());
     _subscription?.cancel();
     _subscription = _repository.watchMarketPrices().listen(
-          (prices) => emit(FarmerDashboardLoaded(prices)),
-          onError: (Object e) => emit(FarmerDashboardError(e.toString())),
-        );
+      (prices) => emit(FarmerDashboardLoaded(prices)),
+      onError: (Object e) => emit(FarmerDashboardError(e.toString())),
+    );
   }
 
   @override

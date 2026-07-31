@@ -1,5 +1,6 @@
 import '../domain/market_price_model.dart';
 import '../domain/market_repository.dart';
+
 class FakeMarketRepository implements MarketRepository {
   @override
   Stream<List<MarketPrice>> watchMarketPrices() async* {

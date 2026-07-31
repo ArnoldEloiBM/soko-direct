@@ -57,12 +57,19 @@ class ListingCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           cropName,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (verified)
-                        const Icon(Icons.verified, size: 16, color: AppColors.primaryGreen),
+                        const Icon(
+                          Icons.verified,
+                          size: 16,
+                          color: AppColors.primaryGreen,
+                        ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -77,13 +84,23 @@ class ListingCard extends StatelessWidget {
                     children: [
                       Text(
                         '${pricePerKg.toStringAsFixed(0)} RWF/kg',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryGreen),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryGreen,
+                        ),
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.star, size: 14, color: AppColors.warning),
+                          const Icon(
+                            Icons.star,
+                            size: 14,
+                            color: AppColors.warning,
+                          ),
                           const SizedBox(width: 2),
-                          Text(rating.toStringAsFixed(1), style: const TextStyle(fontSize: 12)),
+                          Text(
+                            rating.toStringAsFixed(1),
+                            style: const TextStyle(fontSize: 12),
+                          ),
                         ],
                       ),
                     ],

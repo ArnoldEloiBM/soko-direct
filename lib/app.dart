@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
+import 'features/auth/presentation/screens/auth_gate.dart';
 
 class SokoDirectApp extends StatelessWidget {
   const SokoDirectApp({super.key});
@@ -17,34 +18,15 @@ class SokoDirectApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode:
-              themeMode == AppThemeMode.dark ? ThemeMode.dark : ThemeMode.light,
-          home: const HomePlaceholder(),
+          themeMode: themeMode == AppThemeMode.dark
+              ? ThemeMode.dark
+              : ThemeMode.light,
+          // TODO(onboarding): once Armstrong's splash + role selection
+          // screens land, push AuthGate from there instead of using it
+          // directly as `home`.
+          home: const AuthGate(),
         );
       },
-    );
-  }
-}
-
-/// Temporary screen — replace with real onboarding/role selection once
-/// Armstrong's splash + role selection screens are ready.
-/// This just proves the Cubit pattern works end to end.
-class HomePlaceholder extends StatelessWidget {
-  const HomePlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Soko Direct')),
-      body: Center(
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.brightness_6),
-          label: const Text('Toggle Theme'),
-          // Screen only calls the Cubit. It never touches SharedPreferences
-          // or Firebase directly — that's the whole point of this pattern.
-          onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-        ),
-      ),
     );
   }
 }

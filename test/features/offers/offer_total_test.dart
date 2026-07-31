@@ -4,7 +4,6 @@ import 'package:soko_direct/features/offers/domain/offer_total.dart';
 void main() {
   group('calculateOfferTotal', () {
     test('multiplies price per kg by quantity correctly', () {
-    
       final total = calculateOfferTotal(500, 8);
       expect(total, 4000);
     });

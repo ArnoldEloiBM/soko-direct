@@ -18,14 +18,36 @@ class _BuyerDashboardPageState extends State<BuyerDashboardPage> {
 
   //fake listings just so we can see the screen working
   final fakeListings = [
-    {'crop': 'Tomatoes', 'farmer': 'Uwimana Chantal', 'district': 'Musanze', 'price': 480.0, 'rating': 4.8, 'verified': true},
-    {'crop': 'Onions', 'farmer': 'Nkurunziza Jean', 'district': 'Huye', 'price': 350.0, 'rating': 4.2, 'verified': false},
-    {'crop': 'Green Peppers', 'farmer': 'Mukamana Alice', 'district': 'Bugesera', 'price': 520.0, 'rating': 4.9, 'verified': true},
+    {
+      'crop': 'Tomatoes',
+      'farmer': 'Uwimana Chantal',
+      'district': 'Musanze',
+      'price': 480.0,
+      'rating': 4.8,
+      'verified': true,
+    },
+    {
+      'crop': 'Onions',
+      'farmer': 'Nkurunziza Jean',
+      'district': 'Huye',
+      'price': 350.0,
+      'rating': 4.2,
+      'verified': false,
+    },
+    {
+      'crop': 'Green Peppers',
+      'farmer': 'Mukamana Alice',
+      'district': 'Bugesera',
+      'price': 520.0,
+      'rating': 4.9,
+      'verified': true,
+    },
   ];
 
   List<Map<String, dynamic>> get visibleListings {
     return fakeListings.where((l) {
-      final matchesSearch = searchText.isEmpty ||
+      final matchesSearch =
+          searchText.isEmpty ||
           l['crop'].toString().toLowerCase().contains(searchText.toLowerCase());
       final matchesCrop = cropFilter == null || l['crop'] == cropFilter;
       return matchesSearch && matchesCrop;
@@ -35,7 +57,10 @@ class _BuyerDashboardPageState extends State<BuyerDashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Browse Produce'), backgroundColor: AppColors.primaryGreen),
+      appBar: AppBar(
+        title: const Text('Browse Produce'),
+        backgroundColor: AppColors.primaryGreen,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -55,12 +80,13 @@ class _BuyerDashboardPageState extends State<BuyerDashboardPage> {
                   ? const Center(child: Text('No produce matches your search.'))
                   : GridView.builder(
                       itemCount: visibleListings.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 0.68,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 0.68,
+                          ),
                       itemBuilder: (context, i) {
                         final l = visibleListings[i];
                         return ListingCard(
