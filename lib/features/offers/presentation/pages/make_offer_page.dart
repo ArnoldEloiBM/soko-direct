@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../offer_cubit.dart';
 import '../offer_state.dart';
+import '../../domain/offer_total.dart';
 
 // make offer / negotiate screen
 // TEMP: no auth yet from samuel and no real listing from arnold,
@@ -52,7 +53,7 @@ class _MakeOfferPageState extends State<MakeOfferPage> {
 
   @override
   Widget build(BuildContext context) {
-    final total = myPrice * qty;
+    final total = calculateOfferTotal(myPrice, qty);
 
     return Scaffold(
       appBar: AppBar(title: Text('Offer for ${widget.cropName}'), backgroundColor: AppColors.primaryGreen),
