@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'firebase_options.dart'; // generated later by `flutterfire configure`
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; 
 
 import 'app.dart';
 import 'core/theme/theme_cubit.dart';
@@ -12,9 +12,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Uncomment once Firebase is set up (see STARTER_GUIDE.md step 6):
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+   );
 
   runApp(
     // Every feature's Cubit/Bloc gets registered here ONCE, at the top,
