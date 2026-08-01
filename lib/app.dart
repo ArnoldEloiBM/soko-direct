@@ -36,7 +36,7 @@ class _SokoDirectAppState extends State<SokoDirectApp> {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode: themeMode == AppThemeMode.dark
+themeMode: themeMode == AppThemeMode.dark
               ? ThemeMode.dark
               : ThemeMode.light,
           home: const SplashScreen(),

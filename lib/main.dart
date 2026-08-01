@@ -19,7 +19,9 @@ import 'features/listings/presentation/listings_cubit.dart';
 import 'features/offers/data/offer_repository_impl.dart';
 import 'features/offers/presentation/farmer_offers_cubit.dart';
 import 'features/offers/presentation/offer_cubit.dart';
-import 'features/wallet/data/fake_wallet_repository.dart';
+import 'features/transactions/data/transaction_firestore_repository.dart';
+import 'features/transactions/presentation/transaction_cubit.dart';
+import 'features/wallet/data/wallet_firestore_repository.dart';
 import 'features/wallet/presentation/wallet_cubit.dart';
 import 'firebase_options.dart';
 
@@ -63,8 +65,12 @@ void main() async {
         ),
         BlocProvider(create: (_) => FarmerOffersCubit()),
 
-        // Dorian — wallet.
-        BlocProvider(create: (_) => WalletCubit(FakeWalletRepository())),
+        // Dorian — wallet + transaction confirmation (real Firestore).
+        BlocProvider(create: (_) => WalletCubit(WalletFirestoreRepository())),
+        BlocProvider(
+          create: (_) =>
+              TransactionCubit(TransactionFirestoreRepository()),
+        ),
 
         // Arnold — listings create/edit/delete.
         BlocProvider(
