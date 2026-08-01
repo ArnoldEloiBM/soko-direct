@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:soko_direct/core/role/role_cubit.dart';
 import 'package:soko_direct/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:soko_direct/features/auth/presentation/cubit/auth_state.dart';
 import 'package:soko_direct/features/auth/presentation/screens/login_screen.dart';
@@ -10,8 +11,13 @@ import '../../../helpers/fake_auth_repository.dart';
 void main() {
   Widget buildSubject() {
     return MaterialApp(
-      home: BlocProvider(
-        create: (_) => AuthCubit(authRepository: FakeAuthRepository()),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => RoleCubit()),
+          BlocProvider(
+            create: (_) => AuthCubit(authRepository: FakeAuthRepository()),
+          ),
+        ],
         child: const LoginScreen(),
       ),
     );
@@ -36,11 +42,16 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: BlocProvider(
-          create: (context) {
-            cubit = AuthCubit(authRepository: FakeAuthRepository());
-            return cubit;
-          },
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => RoleCubit()),
+            BlocProvider(
+              create: (context) {
+                cubit = AuthCubit(authRepository: FakeAuthRepository());
+                return cubit;
+              },
+            ),
+          ],
           child: const LoginScreen(),
         ),
       ),
