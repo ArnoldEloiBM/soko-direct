@@ -53,10 +53,7 @@ void main() {
         return WalletCubit(repository);
       },
       act: (cubit) => cubit.loadWallet('demo-user'),
-      expect: () => [
-        isA<WalletLoading>(),
-        isA<WalletError>(),
-      ],
+      expect: () => [isA<WalletLoading>(), isA<WalletError>()],
     );
 
     blocTest<WalletCubit, WalletState>(

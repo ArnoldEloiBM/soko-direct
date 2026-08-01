@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../auth/presentation/cubit/auth_cubit.dart';
 import 'wallet_cubit.dart';
 import 'wallet_state.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
 
-  // Hard-coded for now — once Auth is wired up, this will come from
-  // whoever is logged in instead.
+  // Falls back to this only if somehow reached while signed out — AuthGate
+  // should prevent that in practice.
   static const demoUserId = 'demo-user';
 
   @override
@@ -15,11 +17,15 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
+  late final String _userId;
+
   @override
   void initState() {
     super.initState();
+    _userId =
+        context.read<AuthCubit>().state.user?.id ?? WalletScreen.demoUserId;
     // Load the wallet the moment this screen appears.
-    context.read<WalletCubit>().loadWallet(WalletScreen.demoUserId);
+    context.read<WalletCubit>().loadWallet(_userId);
   }
 
   @override
@@ -61,9 +67,10 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () => context
-                      .read<WalletCubit>()
-                      .topUp(WalletScreen.demoUserId, 1000),
+                  onPressed: () => context.read<WalletCubit>().topUp(
+                    WalletScreen.demoUserId,
+                    1000,
+                  ),
                   child: const Text('Top Up 1000 RWF'),
                 ),
               ],

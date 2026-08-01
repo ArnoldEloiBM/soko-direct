@@ -1,0 +1,83 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Auth (Samuel): a user's own profile document. Registration writes
+    // this once; the owner can update their own profile afterward.
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // Transactions (Samuel): read-only from the client today — only the
+    // buyer or farmer on the transaction may read it. Writes are expected
+    // to land here once "confirm transaction" / "confirm delivery" are
+    // built; until then, disallow client writes entirely rather than
+    // leaving them open.
+    match /transactions/{transactionId} {
+      allow read: if request.auth != null
+        && request.auth.uid in resource.data.participants;
+      allow write: if false;
+    }
+
+    match /listings/{listingId} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+        && request.resource.data.sellerId == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'sellerId',
+          'cropType',
+          'pricePerKg',
+          'quantityKg',
+          'availableFrom',
+          'location',
+          'photoUrl',
+          'status',
+          'offerCount',
+          'createdAt',
+        ]);
+
+      allow update, delete: if request.auth != null
+        && resource.data.sellerId == request.auth.uid;
+    }
+
+    // Offers: only the buyer who made the offer or the farmer who owns
+    // the listing may read it. Either side can update its status
+    // (accept/reject); only the buyer who created it can delete it.
+    match /offers/{offerId} {
+      allow read: if request.auth != null
+        && (request.auth.uid == resource.data.buyerId
+          || request.auth.uid == resource.data.farmerId);
+
+      allow create: if request.auth != null
+        && request.resource.data.buyerId == request.auth.uid;
+
+      allow update: if request.auth != null
+        && (request.auth.uid == resource.data.buyerId
+          || request.auth.uid == resource.data.farmerId);
+
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.buyerId;
+    }
+
+    // Ratings: anyone signed in can read ratings (they're shown on a
+    // seller's profile). Only the rater can create their own rating, and
+    // ratings are immutable afterward — no update/delete once submitted.
+    match /ratings/{ratingId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.raterId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Wallet: strictly the wallet's owner, both ways. (Currently only
+    // backed by a fake in-memory repository — this is here for when it
+    // moves to Firestore.)
+    match /wallets/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

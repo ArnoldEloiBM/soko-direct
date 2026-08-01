@@ -6,6 +6,7 @@ class Offer {
   final String listingId;
   final String buyerId;
   final String farmerId;
+  final String cropType;
   final double pricePerKg;
   final int quantityKg;
   final String status; // pending, accepted, rejected
@@ -16,9 +17,12 @@ class Offer {
     required this.listingId,
     required this.buyerId,
     required this.farmerId,
+    required this.cropType,
     required this.pricePerKg,
     required this.quantityKg,
     required this.status,
     required this.createdAt,
   });
+
+  bool get isPending => status == 'pending';
 }
