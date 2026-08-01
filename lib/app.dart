@@ -21,7 +21,7 @@ class SokoDirectApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme,
           themeMode:
               themeMode == AppThemeMode.dark ? ThemeMode.dark : ThemeMode.light,
-          home: const TransactionScreen(),
+          home: const WalletScreen(),
         );
       },
     );

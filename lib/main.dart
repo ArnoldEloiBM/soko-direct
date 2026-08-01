@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app.dart';
 import 'core/theme/theme_cubit.dart';
-import 'features/wallet/data/fake_wallet_repository.dart';
+import 'features/wallet/data/wallet_firestore_repository.dart';
 import 'features/wallet/presentation/wallet_cubit.dart';
-import 'features/transactions/data/fake_transaction_repository.dart';
+import 'features/transactions/data/transaction_firestore_repository.dart';
 import 'features/transactions/presentation/transaction_cubit.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +23,8 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => ThemeCubit()),
-        BlocProvider(create: (_) => WalletCubit(FakeWalletRepository())),
-        BlocProvider(create: (_) => TransactionCubit(FakeTransactionRepository())),
+        BlocProvider(create: (_) => WalletCubit(WalletFirestoreRepository())),
+        BlocProvider(create: (_) => TransactionCubit(TransactionFirestoreRepository())),
 
         // Teammates: add yours here, e.g.
         // BlocProvider(create: (_) => AuthBloc(authRepository: AuthRepository())),
